@@ -8,6 +8,7 @@ import gregtech.api.GregTechAPI;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
 import gregtech.api.util.GTUtility;
+import gregtech.common.metatileentities.MetaTileEntities;
 import gregtech.integration.jei.multiblock.MultiblockInfoCategory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
@@ -22,18 +23,10 @@ public class MTTileEntities {
     public static EnergySink ENERGY_SINK;
 
     public static void init() {
-        ARMOR_WORKBENCH = register(10100, new MetaTileEntityArmorWorkbench(loc("armor_workbench")));
+        ARMOR_WORKBENCH = MetaTileEntities.registerMetaTileEntity(10100, new MetaTileEntityArmorWorkbench(loc("armor_workbench")));
         if (MTConfig.teslaTower.enable)
-            TESLA_TOWER = register(10101, new MetaTileEntityTeslaTower(loc("tesla_tower")));
-        ENERGY_SINK = register(10490, new EnergySink(loc("energy_sink")));
-    }
-
-    private static <T extends MetaTileEntity> T register(int id, T t) {
-        if (t instanceof MultiblockControllerBase && Loader.isModLoaded(GTValues.MODID_JEI)) {
-            MultiblockInfoCategory.registerMultiblock((MultiblockControllerBase) t);
-        }
-        GregTechAPI.MTE_REGISTRY.register(id, t.metaTileEntityId, t);
-        return t;
+            TESLA_TOWER = MetaTileEntities.registerMetaTileEntity(10101, new MetaTileEntityTeslaTower(loc("tesla_tower")));
+        ENERGY_SINK = MetaTileEntities.registerMetaTileEntity(10490, new EnergySink(loc("energy_sink")));
     }
 
     private static ResourceLocation loc(String path) {

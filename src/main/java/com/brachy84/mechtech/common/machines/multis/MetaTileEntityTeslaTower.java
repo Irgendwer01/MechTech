@@ -10,6 +10,10 @@ import com.brachy84.mechtech.common.MTConfig;
 import com.brachy84.mechtech.common.cover.CoverWirelessReceiver;
 import com.brachy84.mechtech.network.NetworkHandler;
 import com.brachy84.mechtech.network.packets.STeslaTowerEffect;
+import com.cleanroommc.modularui.api.value.IIntValue;
+import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
+import com.cleanroommc.modularui.value.sync.IntSyncValue;
+import com.cleanroommc.modularui.widgets.ToggleButton;
 import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.GregtechTileCapabilities;
@@ -25,11 +29,15 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIFactory;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.pattern.*;
 import gregtech.api.unification.material.Material;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.util.BlockInfo;
 import gregtech.api.util.GTLog;
+import gregtech.api.util.KeyUtil;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.blocks.BlockCompressed;
@@ -37,6 +45,7 @@ import gregtech.common.blocks.BlockMetalCasing;
 import gregtech.common.blocks.BlockWireCoil;
 import gregtech.common.blocks.MetaBlocks;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -381,31 +390,44 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
             } else {
                 return false;
             }
-        }, () -> Arrays.stream(BlockWireCoil.CoilType.values()).map((type) -> new BlockInfo(MetaBlocks.WIRE_COIL.getState(type), null)).toArray(BlockInfo[]::new)).addTooltips("gregtech.multiblock.pattern.error.coils");
+        }, () -> Arrays.stream(BlockWireCoil.getCoilTypes().toArray(new BlockWireCoil.CoilType[0])).map((type) -> new BlockInfo(MetaBlocks.WIRE_COIL.getState(type), null)).toArray(BlockInfo[]::new)).addTooltips("gregtech.multiblock.pattern.error.coils");
     }
 
     protected IBlockState getCasingState() {
         return MetaBlocks.METAL_CASING.getState(BlockMetalCasing.MetalCasingType.TITANIUM_STABLE);
     }
 
-    @Override
-    protected ModularUI.Builder createUITemplate(EntityPlayer entityPlayer) {
-        ModularUI.Builder builder = super.createUITemplate(entityPlayer);
-        builder.widget(new CycleButtonWidget(61, 97, 100, 20, () -> defenseMode, val -> defenseMode = val, "Wireless Energy Mode", "Defense Mode")
-                .setTooltipHoverString("mechtech.tesla_tower.ui.mode.tooltip"));
-        return builder;
+    private boolean getDefenseMode() {
+        return this.defenseMode;
+    }
+
+    private void setDefenseMode(boolean defenseMode) {
+        this.defenseMode = defenseMode;
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
-        super.addDisplayText(textList);
-        if (isStructureFormed()) {
-            textList.add(new TextComponentString("Volt: " + voltage));
-            textList.add(new TextComponentString("Amps: " + maxAmps));
-            textList.add(new TextComponentString("Dmg: " + dmg));
-            textList.add(new TextComponentString("Range: " + range));
-            textList.add(new TextComponentString("Receivers: " + energyHandlers.size()));
-        }
+    protected MultiblockUIFactory createUIFactory() {
+        return super.createUIFactory().createFlexButton((posGuiData, panelSyncManager) ->  {
+            BooleanSyncValue booleanSyncValue = new BooleanSyncValue(this::getDefenseMode, this::setDefenseMode);
+            return new ToggleButton().addTooltipElement(KeyUtil.lang("mechtech.tesla_tower.ui.mode.tooltip"))
+                    .value(booleanSyncValue)
+                    .overlay(true, GTGuiTextures.BUTTON_REDSTONE_ON)
+                    .overlay(false, GTGuiTextures.BUTTON_REDSTONE_OFF);
+        });
+    }
+
+    @Override
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        super.configureDisplayText(builder);
+        builder.structureFormed(isStructureFormed())
+                .addCustom((keyManager, uiSyncer) -> {
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.voltage", voltage));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.amps", maxAmps));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.damage", dmg));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.range", range));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.receivers", energyHandlers.size()));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.current_mode", uiSyncer.syncBoolean(this.defenseMode) ? I18n.format("mechtech.multiblock.tesla_tower.mode.defense") : I18n.format("mechtech.multiblock.tesla_tower.mode.wireless_energy")));
+                });
     }
 
     @Override
@@ -447,8 +469,8 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
             return true;
         }
 
-        if (voltage < energyContainer.getInputVoltage()) {
-            GTLog.logger.info("Tier to high at {}" + MechTech.blockPosToString(pos));
+        if (voltage < energyContainer.getInputVoltage() && MTConfig.debug) {
+            MechTech.logger.info("Tier to high at {}" + MechTech.blockPosToString(pos));
             return true;
         }
 
@@ -457,8 +479,8 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
         long lost = (long) (volt * (1 - getLossFactor(center.getDistance(pos.getX(), pos.getY(), pos.getZ()) / range)));
         volt = Math.min(energyContainer.getEnergyCapacity() - energyContainer.getEnergyStored(), volt);
         // tesla does not have more power than what will be lost, abort
-        if (energyContainerList.getEnergyStored() <= lost) {
-            GTLog.logger.info("Not enough stored energy at {}", MechTech.blockPosToString(pos));
+        if (energyContainerList.getEnergyStored() <= lost  && MTConfig.debug) {
+            MechTech.logger.info("Not enough stored energy at {}", MechTech.blockPosToString(pos));
             return true;
         }
         energyContainerList.removeEnergy(lost);
@@ -468,13 +490,13 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
         volt = Math.min(stored, volt);
 
         long changed = energyContainer.addEnergy(volt);
-        if (changed == 0) {
-            GTLog.logger.info("Nothing inserted at {}" + MechTech.blockPosToString(pos));
+        if (changed == 0  && MTConfig.debug) {
+            MechTech.logger.info("Nothing inserted at {}" + MechTech.blockPosToString(pos));
             return true;
         }
         ampsUsed++;
-        if (-energyContainerList.removeEnergy(changed) != changed) {
-            GTLog.logger.info("Could not drain enough energy");
+        if (-energyContainerList.removeEnergy(changed) != changed  && MTConfig.debug) {
+            MechTech.logger.info("Could not drain enough energy");
             return false;
         }
 

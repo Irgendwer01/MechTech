@@ -9,6 +9,10 @@ public class MTConfig {
     public static ModularArmor modularArmor = new ModularArmor();
     public static TeslaTower teslaTower = new TeslaTower();
 
+    @Config.Name("Debug")
+    @Config.Comment("Logs useful information that can help finding out if something is wrong")
+    public static boolean debug = false;
+
     public static class ModularArmor {
         public Modules modules = new Modules();
 

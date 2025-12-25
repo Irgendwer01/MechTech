@@ -6,6 +6,8 @@ import com.brachy84.mechtech.api.armor.ModularArmor;
 import com.brachy84.mechtech.api.armor.Modules;
 import com.brachy84.mechtech.common.items.MTMetaItems;
 import com.brachy84.mechtech.common.recipes.Recipes;
+import gregtech.api.GregTechAPI;
+import gregtech.api.metatileentity.registry.MTEManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -38,6 +40,11 @@ public class CommonProxy {
         if (modularArmor != null) {
             modularArmor.onUnequip(event.getEntity().world, event.getEntityLiving(), event.getFrom(), event.getTo());
         }
+    }
+
+    @SubscribeEvent
+    public static void registerMTERegistry(MTEManager.MTERegistryEvent event) {
+        GregTechAPI.mteManager.createRegistry(MechTech.MODID);
     }
 
     @SubscribeEvent

@@ -58,7 +58,7 @@ public class AdvancedJetpack extends JetpackModule {
             }
         }
 
-        performFlying(player, hoverMode, modularArmorPiece);
+        performFlying(player, hoverMode, false, modularArmorPiece);
 
         if (toggleTimer > 0) toggleTimer--;
 
@@ -110,20 +110,6 @@ public class AdvancedJetpack extends JetpackModule {
     @Override
     public float getFallDamageReduction() {
         return 2.0f;
-    }
-
-    @Override
-    public void drawHUD(ItemStack item, NBTTagCompound armorData) {
-        ModularArmor.drawEnergyHUD(item);
-        IElectricItem cont = item.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
-        if (cont == null) return;
-        if (armorData != null) {
-            String status = "metaarmor.hud.status.disabled";
-            if (armorData.getBoolean("hover")) {
-                status = "metaarmor.hud.status.enabled";
-            }
-            ModularArmor.drawHUDText(item, Lists.newArrayList(status));
-        }
     }
 
     @Override

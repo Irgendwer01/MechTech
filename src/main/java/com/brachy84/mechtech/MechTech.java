@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
         dependencies = "required:forge@[14.23.5.2847,);" + GTInternalTags.DEP_VERSION_STRING + "after:crafttweaker")
 public class MechTech {
 
-    public static final String MODID = Tags.ID;
+    public static final String MODID = Tags.MODID;
     public static final String NAME = "MechTech";
     public static final String VERSION = Tags.VERSION;
 

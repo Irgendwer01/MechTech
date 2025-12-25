@@ -1,6 +1,6 @@
 package com.brachy84.mechtech.client.render;
 
-import gregtech.api.util.XSTR;
+import gregtech.api.util.random.XoShiRo256PlusPlusRandom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -30,7 +30,7 @@ public class Lightning extends Particle {
     public Lightning(World worldIn, double posXIn, double posYIn, double posZIn, Vec3d target) {
         super(worldIn, posXIn, posYIn, posZIn);
         this.target = target;
-        rand = new XSTR();
+        rand = new XoShiRo256PlusPlusRandom();
         setMaxAge(2);
         particleGravity = 0;
         this.motionX = 0;

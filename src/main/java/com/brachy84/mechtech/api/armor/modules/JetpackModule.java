@@ -61,7 +61,7 @@ public class JetpackModule implements IJetpack, IModule {
             }
         }
 
-        this.performFlying(player, hover, modularArmorPiece);
+        this.performFlying(player, hover, false, modularArmorPiece);
         if (toggleTimer > 0) {
             --toggleTimer;
         }
