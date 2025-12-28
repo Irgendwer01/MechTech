@@ -1,5 +1,6 @@
 package com.brachy84.mechtech.api.armor;
 
+import gregtech.api.items.armor.ArmorUtils;
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.items.metaitem.stats.IItemBehaviour;
 import gregtech.api.items.metaitem.stats.IItemComponent;
@@ -85,15 +86,27 @@ public interface IModule extends IItemBehaviour {
     }
 
     /**
-     * Called each tick when the armor piece with this module is worn
+     * Called each tick (serverside) when the armor piece with this module is worn
      *
      * @param world             current world
      * @param player            wearing player
      * @param modularArmorPiece armor piece
      * @param armorData         nbt data of armor piece
      */
-    default void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
+    default void onServerTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
     }
+
+    /**
+     * Called each tick (clientside) when the armor piece with this module is worn
+     *
+     * @param world             current world
+     * @param player            wearing player
+     * @param modularArmorPiece armor piece
+     * @param armorData         nbt data of armor piece
+     */
+    default void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
+    }
+
 
     /**
      * Called when the worn modular armor piece is taken of
@@ -175,10 +188,10 @@ public interface IModule extends IItemBehaviour {
      *
      * @param armorPiece armor piece item
      * @param armorData  data stored in armor (This is NOT the data from {@link #writeExtraDataToArmor(NBTTagCompound, ItemStack)}),
-     *                   it is the same data as in {@link #onTick(World, EntityPlayer, ItemStack, NBTTagCompound)})
+     *                   it is the same data as in {@link #onClientTick(World, EntityPlayer, ItemStack, NBTTagCompound))
      */
     @SideOnly(Side.CLIENT)
-    default void drawHUD(ItemStack armorPiece, NBTTagCompound armorData) {
+    default void addHUDInfo(ItemStack armorPiece, NBTTagCompound armorData, ArmorUtils.ModularHUD HUD) {
     }
 
     /**

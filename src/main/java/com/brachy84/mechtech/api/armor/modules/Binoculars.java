@@ -20,7 +20,7 @@ public class Binoculars implements IModule {
     }
 
     @Override
-    public void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
+    public void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
         byte toggleTimer = 0;
         boolean zoom = false;
         if (armorData.hasKey("toggleTimer")) {
@@ -35,13 +35,6 @@ public class Binoculars implements IModule {
             zoom = !zoom;
             toggleTimer = 5;
             armorData.setBoolean("zoom", zoom);
-            if (!world.isRemote) {
-                if (zoom) {
-                    player.sendStatusMessage(new TextComponentTranslation("mechtech.modules.binoculars.zoom.enable"), true);
-                } else {
-                    player.sendStatusMessage(new TextComponentTranslation("mechtech.modules.binoculars.zoom.disable"), true);
-                }
-            }
         }
 
         if (toggleTimer > 0) {

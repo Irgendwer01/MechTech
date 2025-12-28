@@ -1,13 +1,14 @@
 package com.brachy84.mechtech.network;
 
 import com.brachy84.mechtech.MechTech;
+import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
 import com.brachy84.mechtech.network.packets.STeslaCoilEffect;
+import com.brachy84.mechtech.network.packets.CTeslaCoilModeSwitch;
 import com.brachy84.mechtech.network.packets.STeslaTowerEffect;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.util.IThreadListener;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -24,6 +25,8 @@ public class NetworkHandler {
     public static void init() {
         registerS2C(STeslaCoilEffect.class);
         registerS2C(STeslaTowerEffect.class);
+        registerC2S(CTeslaCoilModeSwitch.class);
+        registerC2S(CModularArmorSwitchModuleMode.class);
     }
 
     private static void registerC2S(Class<? extends IPacket> clazz) {

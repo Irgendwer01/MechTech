@@ -5,25 +5,25 @@ import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import com.brachy84.mechtech.MechTech;
 import com.brachy84.mechtech.api.ToroidBlock;
+import com.brachy84.mechtech.api.armor.IModule;
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.api.armor.modules.ReceiverModule;
 import com.brachy84.mechtech.api.capability.GoodEnergyContainerList;
 import com.brachy84.mechtech.common.MTConfig;
 import com.brachy84.mechtech.common.cover.CoverWirelessReceiver;
 import com.brachy84.mechtech.network.NetworkHandler;
 import com.brachy84.mechtech.network.packets.STeslaTowerEffect;
-import com.cleanroommc.modularui.api.value.IIntValue;
 import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
-import com.cleanroommc.modularui.value.sync.IntSyncValue;
 import com.cleanroommc.modularui.widgets.ToggleButton;
 import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.GregtechTileCapabilities;
+import gregtech.api.capability.IElectricItem;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.impl.EnergyContainerBatteryBuffer;
 import gregtech.api.cover.Cover;
 import gregtech.api.cover.CoverableView;
 import gregtech.api.damagesources.DamageSources;
-import gregtech.api.gui.ModularUI;
-import gregtech.api.gui.widgets.CycleButtonWidget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
@@ -36,7 +36,6 @@ import gregtech.api.pattern.*;
 import gregtech.api.unification.material.Material;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.util.BlockInfo;
-import gregtech.api.util.GTLog;
 import gregtech.api.util.KeyUtil;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.Textures;
@@ -50,6 +49,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -57,8 +58,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.jetbrains.annotations.NotNull;
 
@@ -174,7 +173,7 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
         }
 
         // randomly damage an entity every 4 ticks
-        if (getOffsetTimer() % DMG_FREQUENCY == 0 && livings.size() > 0 && energyContainerList.getEnergyStored() > 0) {
+        if (getOffsetTimer() % DMG_FREQUENCY == 0 && !livings.isEmpty() && energyContainerList.getEnergyStored() > 0) {
             int maxEntities = 10;
             int entitiesHit = 0;
             float dmg = DMG_FREQUENCY * this.dmg / 10f;
@@ -200,9 +199,54 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
         }
     }
 
+    private void chargePlayers() {
+        // gather living entities every 2 seconds
+        if (getOffsetTimer() % 40 == 0) {
+            livings.clear();
+            for (Entity entity : getWorld().getEntitiesInAABBexcluding(null, new AxisAlignedBB(minPos, maxPos), entity -> entity.isEntityAlive() && entity instanceof EntityLivingBase)) {
+                livings.add((EntityLivingBase) entity);
+            }
+        }
+
+        // charge the players
+        if (!livings.isEmpty() && energyContainerList.getEnergyStored() > 0) {
+            Collections.shuffle(livings);
+            for (EntityLivingBase entity : livings) {
+                if (!(entity instanceof EntityPlayer player)) {
+                    continue;
+                }
+                ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
+                if ((stack != null || stack.isEmpty())) {
+                    ModularArmor modularArmor = ModularArmor.get(stack);
+                    if (modularArmor != null) {
+                        if (stack.hasCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null)) {
+                            for (IModule module : ModularArmor.getModulesOf(stack)) {
+                                if (module instanceof ReceiverModule) {
+                                    IElectricItem electricItem = stack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+                                    long chargeToTake = Math.min(electricItem.charge(ModularArmor.getTransferLimit(stack), Integer.MAX_VALUE, true, true), energyContainerList.getEnergyStored());
+                                    if (chargeToTake > 0 && energyContainerList.getEnergyStored() >= chargeToTake) {
+                                        energyContainerList.removeEnergy(chargeToTake);
+                                        electricItem.charge(chargeToTake, Integer.MAX_VALUE, true, false);
+                                        // Play effect each 5 Seconds
+                                        if (getOffsetTimer() % 100 == 0) {
+                                            playEffects(player);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void updateWirelessEnergyMode() {
         // scan range for receivers every tick
         scanRange();
+
+        // charge players
+        chargePlayers();
 
         // transmit energy to receivers every second
         long stored = energyContainerList.getEnergyStored();
@@ -421,11 +465,11 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
         super.configureDisplayText(builder);
         builder.structureFormed(isStructureFormed())
                 .addCustom((keyManager, uiSyncer) -> {
-                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.voltage", voltage));
-                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.amps", maxAmps));
-                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.damage", dmg));
-                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.range", range));
-                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.receivers", energyHandlers.size()));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.voltage", uiSyncer.syncLong(voltage)));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.amps", uiSyncer.syncInt(maxAmps)));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.damage", uiSyncer.syncFloat(dmg)));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.range", uiSyncer.syncDouble(range)));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.receivers", uiSyncer.syncInt(energyHandlers.size())));
                     keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.current_mode", uiSyncer.syncBoolean(this.defenseMode) ? I18n.format("mechtech.multiblock.tesla_tower.mode.defense") : I18n.format("mechtech.multiblock.tesla_tower.mode.wireless_energy")));
                 });
     }

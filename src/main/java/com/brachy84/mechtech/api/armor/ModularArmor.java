@@ -2,13 +2,16 @@ package com.brachy84.mechtech.api.armor;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
 import gregtech.api.items.armor.ArmorMetaItem;
+import gregtech.api.items.armor.ArmorUtils;
 import gregtech.api.items.armor.IArmorLogic;
 import gregtech.api.items.armor.ISpecialArmorLogic;
 import gregtech.api.items.metaitem.stats.IItemBehaviour;
 import gregtech.api.util.GTLog;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -174,7 +177,11 @@ public class ModularArmor implements ISpecialArmorLogic {
         Collection<IModule> modules = getModulesOf(itemStack);
         NBTTagCompound nbt = getArmorData(itemStack);
         for (IModule module : modules) {
-            module.onTick(world, player, itemStack, nbt);
+            if (world.isRemote) {
+                module.onClientTick(world, player, itemStack, nbt);
+            } else {
+                module.onServerTick(world, player, itemStack, nbt);
+            }
         }
         setArmorData(itemStack, nbt);
     }
@@ -231,46 +238,6 @@ public class ModularArmor implements ISpecialArmorLogic {
         return true;
     }
 
-    // I hate how this is done, but it seems to be the best solution
-    @Override
-    public void damageArmor(EntityLivingBase entityLivingBase, ItemStack stack, DamageSource damageSource, int damage, EntityEquipmentSlot entityEquipmentSlot) {
-        GTLog.logger.info("Would damage armor {}", damage);
-        /*NBTTagCompound nbt = stack.getTagCompound();
-        if (nbt == null || !nbt.hasKey(MODULES))
-            return;
-        int originalDmg = damage;
-        List<Pair<IArmorModule, NBTTagCompound>> modules = new ArrayList<>();
-        NBTTagList modulesNbt = nbt.getTagList(MODULES, Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < modulesNbt.tagCount(); i++) {
-            NBTTagCompound moduleNbt = modulesNbt.getCompoundTagAt(i);
-            IArmorModule module = Modules.getModule(moduleNbt.getInteger("ID"));
-            if (module.isDamageable() && !moduleNbt.getBoolean("Destroyed")) {
-                modules.add(Pair.of(module, moduleNbt));
-            }
-        }
-        while (modules.size() > 0 && damage > 0) {
-            Iterator<Pair<IArmorModule, NBTTagCompound>> iterator = modules.iterator();
-            int c = damage / modules.size();
-            int m = damage % modules.size();
-            while (iterator.hasNext()) {
-                Pair<IArmorModule, NBTTagCompound> entry = iterator.next();
-                int dmg = c;
-                if (m > 0) {
-                    dmg++;
-                    m--;
-                } else if (dmg == 0) {
-                    break;
-                }
-                int damaged = entry.getKey().damage(entityLivingBase, stack, entry.getValue(), damageSource, dmg, entityEquipmentSlot);
-                damage -= damaged;
-                if (damaged != dmg || entry.getValue().getBoolean("Destroyed")) {
-                    iterator.remove();
-                }
-            }
-        }
-        GTLog.logger.info("Damaged Armor {}", originalDmg - damage);*/
-    }
-
     @Override
     public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot equipmentSlot, ItemStack itemStack) {
         ImmutableMultimap.Builder<String, AttributeModifier> builder = new ImmutableMultimap.Builder<>();
@@ -279,11 +246,13 @@ public class ModularArmor implements ISpecialArmorLogic {
 
     @SideOnly(Side.CLIENT)
     public void drawHUD(ItemStack item) {
+        ArmorUtils.ModularHUD HUD = new ArmorUtils.ModularHUD();
         List<IModule> modules = getModulesOf(item);
         NBTTagCompound nbt = getArmorData(item);
-        modules.forEach(module -> {
-            module.drawHUD(item, nbt);
-        });
+        addEnergyHUDInfo(item, HUD);
+        modules.forEach(module -> module.addHUDInfo(item, nbt, HUD));
+        HUD.draw();
+        HUD.reset();
     }
 
     @Override
@@ -365,6 +334,44 @@ public class ModularArmor implements ISpecialArmorLogic {
             nbt.setTag(BATTERIES, list);
         }
         return original - amount;
+    }
+
+    public static int getTier(ItemStack stack) {
+        int tier = 0;
+        List<ItemStack> batteries = getBatteries(stack);
+        if (batteries.isEmpty()) {
+            return GTValues.MV;
+        }
+        // Tier is determined by whatever battery is the lowest tier
+        for (ItemStack battery : batteries) {
+            if (battery.hasCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null)) {
+                IElectricItem electricItem = battery.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+                if (tier == 0) {
+                    tier = electricItem.getTier();
+                }
+                tier = Math.min(tier, electricItem.getTier());
+            }
+        }
+        return tier;
+    }
+
+    public static long getTransferLimit(ItemStack stack) {
+        long transferLimit = 0;
+        List<ItemStack> batteries = getBatteries(stack);
+        if (batteries.isEmpty()) {
+            return 0;
+        }
+        // Transfer limit is determined by whatever battery has the lowest
+        for (ItemStack battery : batteries) {
+            if (battery.hasCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null)) {
+                IElectricItem electricItem = battery.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+                if (transferLimit == 0) {
+                    transferLimit = electricItem.getTransferLimit();
+                }
+                transferLimit = Math.min(transferLimit, electricItem.getTransferLimit());
+            }
+        }
+        return transferLimit;
     }
 
     public static long getCapacity(ItemStack stack) {
@@ -588,11 +595,13 @@ public class ModularArmor implements ISpecialArmorLogic {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void drawEnergyHUD(ItemStack armor) {
-        // TODO draw elements (possibly with TOP?)
-    }
-
-    public static void drawHUDText(ItemStack armor, List<String> lines) {
-        // TODO draw elements (possibly with TOP?)
+    private void addEnergyHUDInfo(ItemStack armor, ArmorUtils.ModularHUD HUD) {
+        IElectricItem cont = armor.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+        if (cont != null) {
+            if (cont.getCharge() != 0L) {
+                float energyMultiplier = cont.getCharge() * 100.0F / cont.getMaxCharge();
+                HUD.newString(I18n.format("metaarmor.hud.energy_lvl", String.format("%.1f", energyMultiplier) + "%"));
+            }
+        }
     }
 }

@@ -6,10 +6,12 @@ import com.brachy84.mechtech.api.armor.Modules;
 import com.google.common.collect.Lists;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
+import gregtech.api.items.armor.ArmorUtils;
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.util.input.KeyBind;
 import gregtech.common.items.MetaItems;
 import gregtech.common.items.armor.IJetpack;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -21,10 +23,9 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.List;
 
 public class JetpackModule implements IJetpack, IModule {
-
-
 
     @Override
     public Collection<IModule> getIncompatibleModules() {
@@ -37,31 +38,23 @@ public class JetpackModule implements IJetpack, IModule {
     }
 
     @Override
-    public void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
-        byte toggleTimer = 0;
+    public void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
         boolean hover = false;
-        if (armorData.hasKey("toggleTimer")) {
-            toggleTimer = armorData.getByte("toggleTimer");
-        }
+        byte toggleTimer = 0;
 
         if (armorData.hasKey("hover")) {
             hover = armorData.getBoolean("hover");
+        }
+        if (armorData.hasKey("toggleTimer")) {
+            toggleTimer = armorData.getByte("toggleTimer");
         }
 
         if (toggleTimer == 0 && KeyBind.ARMOR_HOVER.isKeyDown(player)) {
             hover = !hover;
             toggleTimer = 5;
             armorData.setBoolean("hover", hover);
-            if (!world.isRemote) {
-                if (hover) {
-                    player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.hover.enable"), true);
-                } else {
-                    player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.hover.disable"), true);
-                }
-            }
         }
 
-        this.performFlying(player, hover, false, modularArmorPiece);
         if (toggleTimer > 0) {
             --toggleTimer;
         }
@@ -69,6 +62,7 @@ public class JetpackModule implements IJetpack, IModule {
         armorData.setBoolean("hover", hover);
         armorData.setByte("toggleTimer", toggleTimer);
         player.inventoryContainer.detectAndSendChanges();
+        this.performFlying(player, hover, false, modularArmorPiece);
     }
 
     @Override
@@ -105,16 +99,15 @@ public class JetpackModule implements IJetpack, IModule {
     }
 
     @Override
-    public void drawHUD(ItemStack item, NBTTagCompound armorData) {
-        ModularArmor.drawEnergyHUD(item);
-        IElectricItem cont = item.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
-        if (cont == null) return;
+    public void addHUDInfo(ItemStack item, NBTTagCompound armorData, ArmorUtils.ModularHUD HUD) {
         if (armorData != null) {
-            String status = "metaarmor.hud.status.disabled";
-            if (armorData.getBoolean("hover")) {
-                status = "metaarmor.hud.status.enabled";
+            String status = I18n.format("metaarmor.hud.status.disabled");
+            if (armorData.hasKey("hover")) {
+                 status = (armorData.getBoolean("hover") ? I18n.format("metaarmor.hud.status.enabled") :
+                        I18n.format("metaarmor.hud.status.disabled"));
             }
-            ModularArmor.drawHUDText(item, Lists.newArrayList(status));
+            String result = I18n.format("metaarmor.hud.hover_mode", status);
+            HUD.newString(result);
         }
     }
 

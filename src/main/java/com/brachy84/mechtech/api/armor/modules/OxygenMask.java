@@ -28,8 +28,8 @@ public class OxygenMask extends AbstractModule {
     }
 
     @Override
-    public void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
-        if (!world.isRemote && world.getTotalWorldTime() % 40 == 0) {
+    public void onServerTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
+        if (world.getTotalWorldTime() % 40 == 0) {
             int air = player.getAir();
             if (air < maxAir) {
                 int oxygen = (int) (Math.min(40, maxAir - air) / ratio);

@@ -19,18 +19,16 @@ import net.minecraftforge.items.IItemHandler;
 public class NightVision implements IModule {
 
     @Override
-    public void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound moduleData) {
-        if (!world.isRemote) {
-            IElectricItem item = modularArmorPiece.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
-            if (item != null && item.canUse(4) && item.discharge(4, Integer.MAX_VALUE, false, false, false) == 4) {
-                if (moduleData.getBoolean("NiVi"))
-                    return;
-                player.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 999999999, 0, true, false));
-            } else {
-                player.removePotionEffect(MobEffects.NIGHT_VISION);
-            }
-            player.inventoryContainer.detectAndSendChanges();
+    public void onServerTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
+        IElectricItem item = modularArmorPiece.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+        if (item != null && item.canUse(4) && item.discharge(4, Integer.MAX_VALUE, false, false, false) == 4) {
+            if (armorData.getBoolean("NiVi"))
+                return;
+            player.addPotionEffect(new PotionEffect(MobEffects.NIGHT_VISION, 999999999, 0, true, false));
+        } else {
+            player.removePotionEffect(MobEffects.NIGHT_VISION);
         }
+        player.inventoryContainer.detectAndSendChanges();
     }
 
     @Override

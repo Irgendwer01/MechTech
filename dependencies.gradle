@@ -42,6 +42,6 @@ dependencies {
     implementation "curse.maven:crafttweaker-239197:6929088"
     implementation "curse.maven:groovyscript_dev-687577:7343467"
     implementation "curse.maven:MUI_dev-624243:7202583"
+    implementation rfg.deobf("curse.maven:baubles-227083:2518667")
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
 }

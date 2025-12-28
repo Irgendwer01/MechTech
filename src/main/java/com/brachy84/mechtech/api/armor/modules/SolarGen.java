@@ -29,8 +29,8 @@ public class SolarGen implements IModule {
     }
 
     @Override
-    public void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
-        if (!world.isRemote && world.canSeeSky(new BlockPos(player.posX, player.posY + player.getEyeHeight(), player.posZ))) {
+    public void onServerTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
+        if (world.canSeeSky(new BlockPos(player.posX, player.posY + player.getEyeHeight(), player.posZ))) {
             float sunBrightness = world.getSunBrightness(Minecraft.getMinecraft().getRenderPartialTicks());
             sunBrightness -= 0.2f;
             sunBrightness /= 0.8f; // undo mc's trickery
@@ -51,6 +51,7 @@ public class SolarGen implements IModule {
             }
         }
     }
+
 
     @Override
     public boolean canPlaceIn(EntityEquipmentSlot slot, ItemStack modularArmorPiece, IItemHandler modularSlots) {

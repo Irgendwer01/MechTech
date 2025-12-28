@@ -1,7 +1,6 @@
 package com.brachy84.mechtech.api.armor.modules;
 
 import com.brachy84.mechtech.api.armor.IModule;
-import com.brachy84.mechtech.api.armor.ModularArmor;
 import com.brachy84.mechtech.api.armor.Modules;
 import com.google.common.collect.Lists;
 import gregtech.api.capability.GregtechCapabilities;
@@ -10,13 +9,11 @@ import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.util.input.KeyBind;
 import gregtech.common.items.MetaItems;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
-import net.minecraftforge.items.IItemHandler;
 
 import java.util.Collection;
 
@@ -28,43 +25,8 @@ public class AdvancedJetpack extends JetpackModule {
     }
 
     @Override
-    public boolean canPlaceIn(EntityEquipmentSlot slot, ItemStack modularArmorPiece, IItemHandler modularSlots) {
-        return slot == EntityEquipmentSlot.CHEST;
-    }
-
-    @Override
     public Collection<IModule> getIncompatibleModules() {
         return Lists.newArrayList(Modules.JETPACK);
-    }
-
-    @Override
-    public void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
-        IElectricItem cont = modularArmorPiece.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
-        if (cont == null) {
-            return;
-        }
-        boolean hoverMode = armorData.getBoolean("hover");
-        byte toggleTimer = armorData.getByte("toggleTimer");
-
-        if (toggleTimer == 0 && KeyBind.ARMOR_HOVER.isKeyDown(player)) {
-            hoverMode = !hoverMode;
-            toggleTimer = 5;
-            armorData.setBoolean("hover", hoverMode);
-            if (!world.isRemote) {
-                if (hoverMode)
-                    player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.hover.enable"), true);
-                else
-                    player.sendStatusMessage(new TextComponentTranslation("metaarmor.jetpack.hover.disable"), true);
-            }
-        }
-
-        performFlying(player, hoverMode, false, modularArmorPiece);
-
-        if (toggleTimer > 0) toggleTimer--;
-
-        armorData.setBoolean("hover", hoverMode);
-        armorData.setByte("toggleTimer", toggleTimer);
-        player.inventoryContainer.detectAndSendChanges();
     }
 
     @Override

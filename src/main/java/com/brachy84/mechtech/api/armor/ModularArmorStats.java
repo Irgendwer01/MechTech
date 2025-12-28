@@ -101,7 +101,7 @@ public class ModularArmorStats implements IItemMaxStackSizeProvider, IItemCapabi
              */
             @Override
             public long getTransferLimit() {
-                return Long.MAX_VALUE;
+                return ModularArmor.getTransferLimit(stack);
             }
 
             @Override
@@ -116,7 +116,7 @@ public class ModularArmorStats implements IItemMaxStackSizeProvider, IItemCapabi
 
             @Override
             public int getTier() {
-                return GTValues.MV;
+                return ModularArmor.getTier(stack);
             }
         };
     }
