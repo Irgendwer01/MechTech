@@ -31,7 +31,7 @@ public class MechTech {
     public static final String NAME = "MechTech";
     public static final String VERSION = Tags.VERSION;
 
-    public static Keys keys = new Keys();
+    public static final Keys keys = new Keys();
     public static final Logger logger = LogManager.getLogger("MechTech");
     @SidedProxy(modId = MODID, clientSide = "com.brachy84.mechtech.common.ClientProxy", serverSide = "com.brachy84.mechtech.common.CommonProxy")
     public static CommonProxy proxy;
