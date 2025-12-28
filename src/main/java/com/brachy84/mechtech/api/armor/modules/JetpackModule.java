@@ -1,8 +1,9 @@
 package com.brachy84.mechtech.api.armor.modules;
 
 import com.brachy84.mechtech.api.armor.IModule;
-import com.brachy84.mechtech.api.armor.ModularArmor;
 import com.brachy84.mechtech.api.armor.Modules;
+import com.brachy84.mechtech.network.NetworkHandler;
+import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
 import com.google.common.collect.Lists;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
@@ -17,7 +18,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 
@@ -26,6 +26,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class JetpackModule implements IJetpack, IModule {
+
+    private byte toggleTimer = 0;
 
     @Override
     public Collection<IModule> getIncompatibleModules() {
@@ -40,28 +42,20 @@ public class JetpackModule implements IJetpack, IModule {
     @Override
     public void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
         boolean hover = false;
-        byte toggleTimer = 0;
 
         if (armorData.hasKey("hover")) {
             hover = armorData.getBoolean("hover");
         }
-        if (armorData.hasKey("toggleTimer")) {
-            toggleTimer = armorData.getByte("toggleTimer");
-        }
 
         if (toggleTimer == 0 && KeyBind.ARMOR_HOVER.isKeyDown(player)) {
-            hover = !hover;
             toggleTimer = 5;
-            armorData.setBoolean("hover", hover);
+            NetworkHandler.sendToServer(new CModularArmorSwitchModuleMode(EntityEquipmentSlot.CHEST, "hover"));
         }
 
         if (toggleTimer > 0) {
             --toggleTimer;
         }
 
-        armorData.setBoolean("hover", hover);
-        armorData.setByte("toggleTimer", toggleTimer);
-        player.inventoryContainer.detectAndSendChanges();
         this.performFlying(player, hover, false, modularArmorPiece);
     }
 
