@@ -139,7 +139,7 @@ public class TeslaCoil implements IModule {
         }
     }
 
-    public void chargeItem(ItemStack armor, ItemStack stack) {
+    private void chargeItem(ItemStack armor, ItemStack stack) {
         if (armor == stack) return;
         IElectricItem armorElectricItem = armor.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
         if (stack.hasCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null)) {
@@ -185,15 +185,15 @@ public class TeslaCoil implements IModule {
     }
 
     @Override
-    public void addHUDInfo(ItemStack armorPiece, NBTTagCompound armorData, ArmorUtils.ModularHUD HUD) {
+    public void addHUDInfo(ItemStack armorPiece, NBTTagCompound armorData, List<String> hudStrings) {
         if (armorData != null) {
             if (armorData.hasKey("tesla_mode")) {
                 byte teslaMode = armorData.getByte("tesla_mode");
                 switch (teslaMode) {
-                    case 0 -> HUD.newString(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("metaarmor.hud.status.disabled")));
-                    case 1 -> HUD.newString(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("mechtech.tesla_coil.attack_mode_switch.monsters")));
-                    case 2 -> HUD.newString(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("mechtech.tesla_coil.attack_mode_switch.animals")));
-                    case 3 -> HUD.newString(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("mechtech.tesla_coil.attack_mode_switch.animals_and_monsters")));
+                    case 0 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("metaarmor.hud.status.disabled")));
+                    case 1 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("mechtech.tesla_coil.attack_mode_switch.monsters")));
+                    case 2 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("mechtech.tesla_coil.attack_mode_switch.animals")));
+                    case 3 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("mechtech.tesla_coil.attack_mode_switch.animals_and_monsters")));
                 }
             }
 
@@ -203,7 +203,7 @@ public class TeslaCoil implements IModule {
                         I18n.format("metaarmor.hud.status.disabled"));
             }
             String result = I18n.format("mataarmor.hud.supply_mode", status);
-            HUD.newString(result);
+            hudStrings.add(result);
         }
     }
 }

@@ -184,14 +184,15 @@ public interface IModule extends IItemBehaviour {
     String getModuleId();
 
     /**
-     * Called in onRender event to draw player HUD
+     * Adds lines to the HUD
      *
      * @param armorPiece armor piece item
      * @param armorData  data stored in armor (This is NOT the data from {@link #writeExtraDataToArmor(NBTTagCompound, ItemStack)}),
      *                   it is the same data as in {@link #onClientTick(World, EntityPlayer, ItemStack, NBTTagCompound))
+     * @param hudStrings Strings to add to the HUD
      */
     @SideOnly(Side.CLIENT)
-    default void addHUDInfo(ItemStack armorPiece, NBTTagCompound armorData, ArmorUtils.ModularHUD HUD) {
+    default void addHUDInfo(ItemStack armorPiece, NBTTagCompound armorData, List<String> hudStrings) {
     }
 
     /**

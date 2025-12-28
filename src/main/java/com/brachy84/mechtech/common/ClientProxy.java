@@ -5,8 +5,10 @@ import com.brachy84.mechtech.api.armor.ModularArmor;
 import com.brachy84.mechtech.api.armor.modules.Binoculars;
 import com.brachy84.mechtech.client.ClientHandler;
 import com.brachy84.mechtech.common.items.MTMetaItems;
+import gregtech.api.items.armor.ArmorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.item.ItemStack;
@@ -20,6 +22,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Mouse;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
@@ -36,14 +39,36 @@ public class ClientProxy extends CommonProxy {
     public static void onRender(final TickEvent.RenderTickEvent event) {
         final Minecraft mc = Minecraft.getMinecraft();
         if (mc.inGameHasFocus && mc.world != null && !mc.gameSettings.showDebugInfo && Minecraft.isGuiEnabled()) {
+            final ArmorUtils.ModularHUD HUD = new ArmorUtils.ModularHUD();
+            List<String> hudStrings = new ArrayList<>();
+            long[] charge = new long[4];
+            long[] maxCharge = new long[4];
             for (int i = 0; i < 4; i++) {
                 ItemStack stack = mc.player.inventory.armorInventory.get(i);
                 ModularArmor modularArmor = ModularArmor.get(stack);
                 if (modularArmor != null) {
-                    modularArmor.drawHUD(stack);
+                    charge[i] = ModularArmor.getEnergy(stack);
+                    maxCharge[i] = ModularArmor.getCapacity(stack);
+                    modularArmor.addHUDInfo(stack, hudStrings);
                 }
             }
+            HUD.newString(I18n.format("metaarmor.hud.energy_lvl", String.format("%.1f", batteryPercentage(charge, maxCharge)) + "%"));
+            for (String string : hudStrings) {
+                HUD.newString(string);
+            }
+            HUD.draw();
+            HUD.reset();
         }
+    }
+
+    private static float batteryPercentage(long[] charge, long[] maxCharge) {
+        float percentage = 0;
+        int max = 0;
+        for (int i = 0; i < charge.length; i++) {
+            max++;
+            percentage += (float) charge[i] * 100.0F / maxCharge[i];
+        }
+        return (percentage * 100 / (max * 100));
     }
 
     @SideOnly(Side.CLIENT)

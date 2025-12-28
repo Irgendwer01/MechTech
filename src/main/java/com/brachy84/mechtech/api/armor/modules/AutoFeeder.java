@@ -107,7 +107,7 @@ public class AutoFeeder extends AbstractModule {
     }
 
     @Override
-    public void addHUDInfo(ItemStack armorPiece, NBTTagCompound armorData, ArmorUtils.ModularHUD HUD) {
+    public void addHUDInfo(ItemStack armorPiece, NBTTagCompound armorData, List<String> hudStrings) {
         if (armorData != null) {
             String status = I18n.format("metaarmor.hud.status.disabled");
             if (armorData.hasKey("feeder_enabled")) {
@@ -115,7 +115,7 @@ public class AutoFeeder extends AbstractModule {
                         I18n.format("metaarmor.hud.status.disabled"));
             }
             String result = I18n.format("mechtech.auto_feeder.mode", status);
-            HUD.newString(result);
+            hudStrings.add(result);
         }
     }
 }

@@ -11,7 +11,6 @@ import gregtech.api.items.armor.IArmorLogic;
 import gregtech.api.items.armor.ISpecialArmorLogic;
 import gregtech.api.items.metaitem.stats.IItemBehaviour;
 import gregtech.api.util.GTLog;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -56,6 +55,7 @@ public class ModularArmor implements ISpecialArmorLogic {
     private final int moduleSlots;
     private final EntityEquipmentSlot slot;
     private final int maxFluidSize;
+
 
     public ModularArmor(EntityEquipmentSlot slot, int moduleSlots, int maxFluidSize) {
         this.slot = slot;
@@ -245,14 +245,10 @@ public class ModularArmor implements ISpecialArmorLogic {
     }
 
     @SideOnly(Side.CLIENT)
-    public void drawHUD(ItemStack item) {
-        ArmorUtils.ModularHUD HUD = new ArmorUtils.ModularHUD();
+    public void addHUDInfo(ItemStack item, List<String> hudStrings) {
         List<IModule> modules = getModulesOf(item);
         NBTTagCompound nbt = getArmorData(item);
-        addEnergyHUDInfo(item, HUD);
-        modules.forEach(module -> module.addHUDInfo(item, nbt, HUD));
-        HUD.draw();
-        HUD.reset();
+        modules.forEach(module -> module.addHUDInfo(item, nbt, hudStrings));
     }
 
     @Override
@@ -591,17 +587,6 @@ public class ModularArmor implements ISpecialArmorLogic {
                     newList.appendTag(modulesNbt.get(i));
             }
             nbt.setTag(MODULES, newList);
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-    private void addEnergyHUDInfo(ItemStack armor, ArmorUtils.ModularHUD HUD) {
-        IElectricItem cont = armor.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
-        if (cont != null) {
-            if (cont.getCharge() != 0L) {
-                float energyMultiplier = cont.getCharge() * 100.0F / cont.getMaxCharge();
-                HUD.newString(I18n.format("metaarmor.hud.energy_lvl", String.format("%.1f", energyMultiplier) + "%"));
-            }
         }
     }
 }

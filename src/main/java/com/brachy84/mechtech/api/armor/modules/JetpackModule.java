@@ -99,7 +99,7 @@ public class JetpackModule implements IJetpack, IModule {
     }
 
     @Override
-    public void addHUDInfo(ItemStack item, NBTTagCompound armorData, ArmorUtils.ModularHUD HUD) {
+    public void addHUDInfo(ItemStack item, NBTTagCompound armorData, List<String> hudStrings) {
         if (armorData != null) {
             String status = I18n.format("metaarmor.hud.status.disabled");
             if (armorData.hasKey("hover")) {
@@ -107,7 +107,7 @@ public class JetpackModule implements IJetpack, IModule {
                         I18n.format("metaarmor.hud.status.disabled"));
             }
             String result = I18n.format("metaarmor.hud.hover_mode", status);
-            HUD.newString(result);
+            hudStrings.add(result);
         }
     }
 
