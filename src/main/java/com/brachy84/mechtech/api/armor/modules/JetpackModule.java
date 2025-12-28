@@ -1,13 +1,14 @@
 package com.brachy84.mechtech.api.armor.modules;
 
 import com.brachy84.mechtech.api.armor.IModule;
+import com.brachy84.mechtech.api.armor.ModularArmor;
 import com.brachy84.mechtech.api.armor.Modules;
 import com.brachy84.mechtech.network.NetworkHandler;
+import com.brachy84.mechtech.network.packets.CModularArmorDrainEnergy;
 import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
 import com.google.common.collect.Lists;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
-import gregtech.api.items.armor.ArmorUtils;
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.util.input.KeyBind;
 import gregtech.common.items.MetaItems;
@@ -42,9 +43,18 @@ public class JetpackModule implements IJetpack, IModule {
     @Override
     public void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
         boolean hover = false;
+        boolean cancelInertia = false;
 
         if (armorData.hasKey("hover")) {
             hover = armorData.getBoolean("hover");
+        }
+
+        ItemStack stack = player.getItemStackFromSlot(EntityEquipmentSlot.FEET);
+        if (stack != null && ModularArmor.get(stack) != null) {
+            NBTTagCompound nbt = ModularArmor.getArmorData(stack);
+            if (nbt.hasKey("cancel_inertia")) {
+                cancelInertia = nbt.getBoolean("cancel_inertia");
+            }
         }
 
         if (toggleTimer == 0 && KeyBind.ARMOR_HOVER.isKeyDown(player)) {
@@ -56,7 +66,7 @@ public class JetpackModule implements IJetpack, IModule {
             --toggleTimer;
         }
 
-        this.performFlying(player, hover, false, modularArmorPiece);
+        this.performFlying(player, hover, cancelInertia, modularArmorPiece);
     }
 
     @Override
@@ -72,10 +82,7 @@ public class JetpackModule implements IJetpack, IModule {
 
     @Override
     public void drainEnergy(@Nonnull ItemStack stack, int amount) {
-        IElectricItem container = this.getIElectricItem(stack);
-        if (container != null) {
-            container.discharge(amount, Integer.MAX_VALUE, true, false, false);
-        }
+        NetworkHandler.sendToServer(new CModularArmorDrainEnergy(ModularArmor.get(stack).getSlot(), amount));
     }
 
     @Override

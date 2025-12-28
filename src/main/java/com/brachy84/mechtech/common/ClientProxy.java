@@ -6,6 +6,7 @@ import com.brachy84.mechtech.api.armor.modules.Binoculars;
 import com.brachy84.mechtech.client.ClientHandler;
 import com.brachy84.mechtech.common.items.MTMetaItems;
 import gregtech.api.items.armor.ArmorUtils;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.I18n;
@@ -29,6 +30,12 @@ import java.util.List;
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
 
+    private static final ArmorUtils.ModularHUD HUD = new ArmorUtils.ModularHUD();
+    private static final List<String> hudStrings = new ArrayList<>();
+    private static final LongArrayList charge = new LongArrayList();
+    private static final LongArrayList maxCharge = new LongArrayList();
+
+
     @Override
     public void preLoad() {
         super.preLoad();
@@ -39,36 +46,44 @@ public class ClientProxy extends CommonProxy {
     public static void onRender(final TickEvent.RenderTickEvent event) {
         final Minecraft mc = Minecraft.getMinecraft();
         if (mc.inGameHasFocus && mc.world != null && !mc.gameSettings.showDebugInfo && Minecraft.isGuiEnabled()) {
-            final ArmorUtils.ModularHUD HUD = new ArmorUtils.ModularHUD();
-            List<String> hudStrings = new ArrayList<>();
-            long[] charge = new long[4];
-            long[] maxCharge = new long[4];
+
+            boolean hasArmor = false;
             for (int i = 0; i < 4; i++) {
                 ItemStack stack = mc.player.inventory.armorInventory.get(i);
                 ModularArmor modularArmor = ModularArmor.get(stack);
                 if (modularArmor != null) {
-                    charge[i] = ModularArmor.getEnergy(stack);
-                    maxCharge[i] = ModularArmor.getCapacity(stack);
+                    if (ModularArmor.getCapacity(stack) > 0) {
+                        charge.add(ModularArmor.getEnergy(stack));
+                        maxCharge.add(ModularArmor.getCapacity(stack));
+                    }
                     modularArmor.addHUDInfo(stack, hudStrings);
+                    hasArmor = true;
                 }
             }
-            HUD.newString(I18n.format("metaarmor.hud.energy_lvl", String.format("%.1f", batteryPercentage(charge, maxCharge)) + "%"));
-            for (String string : hudStrings) {
-                HUD.newString(string);
+            if (hasArmor) {
+                HUD.newString(I18n.format("metaarmor.hud.energy_lvl", String.format("%.1f", batteryPercentage()) + "%"));
+                if (!hudStrings.isEmpty()) {
+                    for (String string : hudStrings) {
+                        HUD.newString(string);
+                    }
+                }
+                HUD.draw();
+                HUD.reset();
             }
-            HUD.draw();
-            HUD.reset();
+            hudStrings.clear();
         }
     }
 
-    private static float batteryPercentage(long[] charge, long[] maxCharge) {
+    private static float batteryPercentage() {
         float percentage = 0;
-        int max = 0;
-        for (int i = 0; i < charge.length; i++) {
+        byte max = 0;
+        for (int i = 0; i < ClientProxy.charge.size(); i++) {
             max++;
-            percentage += (float) charge[i] * 100.0F / maxCharge[i];
+            percentage += (float) ClientProxy.charge.getLong(i) * 100.0F / ClientProxy.maxCharge.getLong(i);
         }
-        return (percentage * 100 / (max * 100));
+        ClientProxy.charge.clear();
+        ClientProxy.maxCharge.clear();
+        return (percentage / max);
     }
 
     @SideOnly(Side.CLIENT)

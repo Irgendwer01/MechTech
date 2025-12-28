@@ -31,37 +31,37 @@ public class AdvancedJetpack extends JetpackModule {
 
     @Override
     public double getSprintEnergyModifier() {
-        return 2.5D;
+        return 4.0;
     }
 
     @Override
     public double getSprintSpeedModifier() {
-        return 1.3D;
+        return 1.8;
     }
 
     @Override
     public double getVerticalHoverSpeed() {
-        return 0.34D;
+        return 0.4;
     }
 
     @Override
     public double getVerticalHoverSlowSpeed() {
-        return 0.03D;
+        return 0.005;
     }
 
     @Override
     public double getVerticalAcceleration() {
-        return 0.13D;
+        return 0.14;
     }
 
     @Override
     public double getVerticalSpeed() {
-        return 0.48D;
+        return 0.8;
     }
 
     @Override
     public double getSidewaysSpeed() {
-        return 0.14D;
+        return 0.19;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class AdvancedJetpack extends JetpackModule {
 
     @Override
     public float getFallDamageReduction() {
-        return 2.0f;
+        return 3.5f;
     }
 
     @Override
