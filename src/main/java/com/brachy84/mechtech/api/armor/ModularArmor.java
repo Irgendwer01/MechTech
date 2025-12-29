@@ -440,6 +440,36 @@ public class ModularArmor implements ISpecialArmorLogic {
         return fluid.amount - toDrain.amount;
     }
 
+    public static int fillFluid(ItemStack stack, FluidStack fluid, boolean simulate) {
+        if (stack.isEmpty() || fluid == null || fluid.amount <= 0) {
+            return 0;
+        }
+        NBTTagCompound nbt = stack.getTagCompound();
+        if (nbt == null) {
+            return 0;
+        }
+        FluidStack toFill = fluid.copy();
+        if (nbt.hasKey(BATTERIES)) {
+            NBTTagList list = nbt.getTagList(BATTERIES, Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < list.tagCount(); i++) {
+                NBTTagCompound batteryNbt = list.getCompoundTagAt(i);
+                ItemStack batteryStack = new ItemStack(batteryNbt);
+                IFluidHandlerItem fluidHandler = batteryStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+                if (fluidHandler != null) {
+                    int filled = fluidHandler.fill(toFill, !simulate);
+                    if (filled > 0) {
+                        toFill.amount -= filled;
+                        if (toFill.amount <= 0) {
+                            break;
+                        }
+                    }
+                }
+            }
+            nbt.setTag(BATTERIES, list);
+        }
+        return fluid.amount - toFill.amount;
+    }
+
     public static List<IFluidHandlerItem> getFluidHandlers(ItemStack stack) {
         if (!stack.isEmpty() && stack.hasTagCompound()) {
             NBTTagCompound nbt = stack.getTagCompound();

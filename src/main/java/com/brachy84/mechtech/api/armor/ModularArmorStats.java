@@ -145,7 +145,12 @@ public class ModularArmorStats implements IItemMaxStackSizeProvider, IItemCapabi
 
             @Override
             public int fill(FluidStack resource, boolean doFill) {
-                return 0;
+                if (resource == null || resource.amount <= 0) {
+                    return 0;
+                }
+                FluidStack toFill = resource.copy();
+                toFill.amount = ModularArmor.fillFluid(stack, toFill, !doFill);
+                return toFill.amount;
             }
 
             @Nullable
