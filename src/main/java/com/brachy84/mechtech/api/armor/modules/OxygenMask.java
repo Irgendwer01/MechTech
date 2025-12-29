@@ -40,7 +40,7 @@ public class OxygenMask extends AbstractModule {
         }
     }
 
-    private int drainOxygen(EntityPlayer player, int amount) {
+    public int drainOxygen(EntityPlayer player, int amount) {
         FluidStack toDrain = Materials.Oxygen.getFluid(amount);
         for (int i = 5; i > 1; i--) {
             EntityEquipmentSlot slot = EntityEquipmentSlot.values()[i];
