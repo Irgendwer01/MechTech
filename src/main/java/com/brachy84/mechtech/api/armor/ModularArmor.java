@@ -1,12 +1,12 @@
 package com.brachy84.mechtech.api.armor;
 
+import com.brachy84.mechtech.common.MTConfig;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
 import gregtech.api.items.armor.ArmorMetaItem;
-import gregtech.api.items.armor.ArmorUtils;
 import gregtech.api.items.armor.IArmorLogic;
 import gregtech.api.items.armor.ISpecialArmorLogic;
 import gregtech.api.items.metaitem.stats.IItemBehaviour;
@@ -73,7 +73,9 @@ public class ModularArmor implements ISpecialArmorLogic {
 
     @Override
     public ISpecialArmor.ArmorProperties getProperties(EntityLivingBase entityLivingBase, @Nonnull ItemStack itemStack, DamageSource damageSource, double damage, EntityEquipmentSlot entityEquipmentSlot) {
-        GTLog.logger.info("Get Properties for source {}, damage {}, slot {}", damageSource.damageType, damage, slot);
+        if (MTConfig.debug) {
+            GTLog.logger.info("Get Properties for source {}, damage {}, slot {}", damageSource.damageType, damage, slot);
+        }
         NBTTagCompound nbt = itemStack.getTagCompound();
         if (nbt == null || !nbt.hasKey(MODULES))
             return new ISpecialArmor.ArmorProperties(0, 0, 0);
@@ -118,7 +120,9 @@ public class ModularArmor implements ISpecialArmorLogic {
                 absorbResult.ratio = moduleDamage / originalDamage;
             }
             properties.AbsorbRatio += absorbResult.ratio;
-            GTLog.logger.info("  do {} special armor module damage", moduleDamage);
+            if (MTConfig.debug) {
+                GTLog.logger.info("  do {} special armor module damage", moduleDamage);
+            }
             if (absorbResult.module instanceof IDurabilityModule) {
                 damage -= ((IDurabilityModule) absorbResult.module).damage(entityLivingBase, itemStack, absorbResult.moduleData, damageSource, moduleDamage, entityEquipmentSlot);
             } else {
@@ -143,7 +147,9 @@ public class ModularArmor implements ISpecialArmorLogic {
             ta *= 4;
             float moduleDamage = (float) (damage - getDamageAfterAbsorb((float) damage, ta, tt));
             moduleDamage /= armorModules.size();
-            GTLog.logger.info("  do {} armor module damage * {}", moduleDamage, armorModules.size());
+            if (MTConfig.debug) {
+                GTLog.logger.info("  do {} armor module damage * {}", moduleDamage, armorModules.size());
+            }
             for (AbsorbResult absorbResult : armorModules) {
                 if (absorbResult.module instanceof IDurabilityModule) {
                     damage -= ((IDurabilityModule) absorbResult.module).damage(entityLivingBase, itemStack, absorbResult.moduleData, damageSource, moduleDamage, entityEquipmentSlot);
@@ -154,7 +160,9 @@ public class ModularArmor implements ISpecialArmorLogic {
         }
         damage = Math.max(damage, 0);
         properties.AbsorbRatio = 1 - (damage / originalDamage);
-        GTLog.logger.info("  damage left {}, ratio {}", damage, properties.AbsorbRatio);
+        if (MTConfig.debug) {
+            GTLog.logger.info("  damage left {}, ratio {}", damage, properties.AbsorbRatio);
+        }
         return properties;
     }
 
