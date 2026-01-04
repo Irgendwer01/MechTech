@@ -59,6 +59,7 @@ mechtech.modules.binoculars.name=Binoculars
 mechtech.modules.auto_feeder.name=Auto Feeder
 mechtech.modules.tesla_coil.name=Tesla Coil
 mechtech.modules.oxygen_mask.name=Oxygen Mask
+mechtech.modules.wireless_cover.name=Wireless Receiver
 
 mechtech.modules.armor_plating.tooltip.1=§rDurability: §a%d/%d
 mechtech.modules.armor_plating.tooltip.2=§rArmor: §a%d
@@ -89,5 +90,6 @@ metaitem.oxygen_mask.tooltip=Allows the user to breath oxygen under water
 metaitem.modular_armor.no_battery=§4Insert Batteries!
 metaitem.modular_armor.installed_modules=§bInstalled Modules: §7(%d/%d)
 metaitem.modular_armor.no_modules=§cNo Modules installed
+metaitem.modular_armor.max_fluid=§3Max fluid cell size: %s
 
 mechtech.modular_armor.usable=§3Can be used as a module in the Modular Armor
