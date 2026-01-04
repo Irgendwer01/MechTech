@@ -143,10 +143,18 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
         }
         for (int i = 0; i < batterySlots.length; i++) {
             int[] pos = batterySlots[i];
-            SlotArmorWorkbench slot = new SlotArmorWorkbench(batterySlotHandler, i, pos[0], pos[1])
-                    .setType(SlotArmorWorkbench.Type.BATTERY)
-                    .setFilter(stack -> ModularArmor.get(stack) == null && (isValidBatteryItem(stack) || isValidTankItem(stack)));
-            slot.setBackgroundTexture(GuiTextures.SLOT, GuiTextures.BATTERY_OVERLAY);
+            SlotArmorWorkbench slot;
+            if (i == 0) {
+                slot = new SlotArmorWorkbench(batterySlotHandler, i, pos[0], pos[1])
+                        .setType(SlotArmorWorkbench.Type.BATTERY)
+                        .setFilter(stack -> ModularArmor.get(stack) == null && (isValidBatteryItem(stack)));
+                slot.setBackgroundTexture(GuiTextures.SLOT, GuiTextures.BATTERY_OVERLAY);
+            } else {
+                slot = new SlotArmorWorkbench(batterySlotHandler, i, pos[0], pos[1])
+                        .setType(SlotArmorWorkbench.Type.BATTERY)
+                        .setFilter(stack -> ModularArmor.get(stack) == null && (isValidTankItem(stack)));
+                slot.setBackgroundTexture(GuiTextures.SLOT, GuiTextures.CANISTER_OVERLAY);
+            }
             slot.setActive(false);
             slot.setVisible(false);
             slotsGroup.addWidget(slot);
@@ -347,17 +355,7 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
         if (armor != null && armor.getMaxFluidSize() > 0) {
             IFluidHandlerItem fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
             if (fluidHandler != null) {
-                long totalCap = 0;
-                for (int j = 0; j < batterySlotHandler.getSlots(); j++) {
-                    ItemStack stack1 = batterySlotHandler.getStackInSlot(j);
-                    if (stack1.isEmpty()) continue;
-                    IFluidHandlerItem fluidHandler1 = stack1.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
-                    if (fluidHandler1 == null) continue;
-                    totalCap += getCapacity(fluidHandler1);
-                    if (armor.getMaxFluidSize() < totalCap)
-                        return false;
-                }
-                return true;
+                return getCapacity(fluidHandler) <= armor.getMaxFluidSize();
             }
         }
         return false;
