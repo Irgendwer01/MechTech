@@ -513,8 +513,10 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
             return true;
         }
 
-        if (voltage < energyContainer.getInputVoltage() && MTConfig.debug) {
-            MechTech.logger.info("Tier to high at {}" + MechTech.blockPosToString(pos));
+        if (voltage < energyContainer.getInputVoltage()) {
+            if (MTConfig.debug) {
+                MechTech.logger.info("Tier to high at {}" + MechTech.blockPosToString(pos));
+            }
             return true;
         }
 
@@ -523,8 +525,10 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
         long lost = (long) (volt * (1 - getLossFactor(center.getDistance(pos.getX(), pos.getY(), pos.getZ()) / range)));
         volt = Math.min(energyContainer.getEnergyCapacity() - energyContainer.getEnergyStored(), volt);
         // tesla does not have more power than what will be lost, abort
-        if (energyContainerList.getEnergyStored() <= lost  && MTConfig.debug) {
-            MechTech.logger.info("Not enough stored energy at {}", MechTech.blockPosToString(pos));
+        if (energyContainerList.getEnergyStored() <= lost) {
+            if (MTConfig.debug) {
+                MechTech.logger.info("Not enough stored energy at {}", MechTech.blockPosToString(pos));
+            }
             return true;
         }
         energyContainerList.removeEnergy(lost);
@@ -534,13 +538,17 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
         volt = Math.min(stored, volt);
 
         long changed = energyContainer.addEnergy(volt);
-        if (changed == 0  && MTConfig.debug) {
-            MechTech.logger.info("Nothing inserted at {}" + MechTech.blockPosToString(pos));
+        if (changed == 0) {
+            if (MTConfig.debug) {
+                MechTech.logger.info("Nothing inserted at {}" + MechTech.blockPosToString(pos));
+            }
             return true;
         }
         ampsUsed++;
-        if (-energyContainerList.removeEnergy(changed) != changed  && MTConfig.debug) {
-            MechTech.logger.info("Could not drain enough energy");
+        if (-energyContainerList.removeEnergy(changed) != changed) {
+            if (MTConfig.debug) {
+                MechTech.logger.info("Could not drain enough energy");
+            }
             return false;
         }
 
