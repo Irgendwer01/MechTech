@@ -25,7 +25,6 @@ public class TorusBlockRecipeWrapper implements IRecipeWrapper {
     @Override
     public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
         drawLine(minecraft, "mechtech.recipe.torus_block.dmg", 0, 18, 0x111111, torusBlock.getDmgModifier());
-        drawLine(minecraft, "mechtech.recipe.torus_block.amps", 0, 27, 0x111111, torusBlock.getAmpsPerBlock());
         drawLine(minecraft, "mechtech.recipe.torus_block.range", 0, 36, 0x111111, torusBlock.getRangeModifier());
     }
 
