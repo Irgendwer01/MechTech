@@ -4,6 +4,7 @@ import com.brachy84.mechtech.api.armor.IModule;
 import com.brachy84.mechtech.api.armor.ModularArmor;
 import com.brachy84.mechtech.api.armor.ModularArmorStats;
 import com.brachy84.mechtech.common.MTConfig;
+import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
 import gregtech.api.items.armor.ArmorMetaItem;
@@ -53,7 +54,7 @@ public class MTArmorItem extends ArmorMetaItem<ArmorMetaItem<?>.ArmorMetaValueIt
                 lines.addAll(Arrays.asList(I18n.format(unlocalizedTooltip, new Object[0]).split("/n")));
             }
 
-            if (modules.size() > 0) {
+            if (!modules.isEmpty()) {
                 lines.add(I18n.format("metaitem.modular_armor.installed_modules", modules.size(), modularArmor.getModuleSlots()));
                 for (IModule module : modules) {
                     lines.add(" - " + module.getLocalizedName());
@@ -70,7 +71,7 @@ public class MTArmorItem extends ArmorMetaItem<ArmorMetaItem<?>.ArmorMetaValueIt
                 if (electricItem.getMaxCharge() == 0) {
                     lines.add(I18n.format("metaitem.modular_armor.no_battery"));
                 } else {
-                    lines.add(I18n.format("metaitem.generic.electric_item.tooltip", electricItem.getCharge(), electricItem.getMaxCharge(), "Unspecified"));
+                    lines.add(I18n.format("metaitem.generic.electric_item.tooltip", electricItem.getCharge(), electricItem.getMaxCharge(), GTValues.VN[electricItem.getTier()]));
                 }
             }
 
