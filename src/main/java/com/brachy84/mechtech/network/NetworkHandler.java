@@ -24,7 +24,6 @@ public class NetworkHandler {
         registerS2C(STeslaTowerEffect.class);
         registerC2S(CTeslaCoilModeSwitch.class);
         registerC2S(CModularArmorSwitchModuleMode.class);
-        registerC2S(CModularArmorDrainEnergy.class);
     }
 
     private static void registerC2S(Class<? extends IPacket> clazz) {

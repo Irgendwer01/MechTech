@@ -4,7 +4,6 @@ import com.brachy84.mechtech.api.armor.IModule;
 import com.brachy84.mechtech.api.armor.ModularArmor;
 import com.brachy84.mechtech.api.armor.Modules;
 import com.brachy84.mechtech.network.NetworkHandler;
-import com.brachy84.mechtech.network.packets.CModularArmorDrainEnergy;
 import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
 import com.google.common.collect.Lists;
 import gregtech.api.capability.GregtechCapabilities;
@@ -42,6 +41,19 @@ public class JetpackModule implements IJetpack, IModule {
 
     @Override
     public void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
+        if (toggleTimer == 0 && KeyBind.ARMOR_HOVER.isKeyDown(player)) {
+            toggleTimer = 5;
+            NetworkHandler.sendToServer(new CModularArmorSwitchModuleMode(EntityEquipmentSlot.CHEST, "hover"));
+        }
+
+        if (toggleTimer > 0) {
+            --toggleTimer;
+        }
+
+    }
+
+    @Override
+    public void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
         boolean hover = false;
         boolean cancelInertia = false;
 
@@ -55,15 +67,6 @@ public class JetpackModule implements IJetpack, IModule {
             if (nbt.hasKey("cancel_inertia")) {
                 cancelInertia = nbt.getBoolean("cancel_inertia");
             }
-        }
-
-        if (toggleTimer == 0 && KeyBind.ARMOR_HOVER.isKeyDown(player)) {
-            toggleTimer = 5;
-            NetworkHandler.sendToServer(new CModularArmorSwitchModuleMode(EntityEquipmentSlot.CHEST, "hover"));
-        }
-
-        if (toggleTimer > 0) {
-            --toggleTimer;
         }
 
         this.performFlying(player, hover, cancelInertia, modularArmorPiece);
@@ -82,7 +85,10 @@ public class JetpackModule implements IJetpack, IModule {
 
     @Override
     public void drainEnergy(@Nonnull ItemStack stack, int amount) {
-        NetworkHandler.sendToServer(new CModularArmorDrainEnergy(ModularArmor.get(stack).getSlot(), amount));
+        IElectricItem container = getIElectricItem(stack);
+        if (container == null)
+            return;
+        container.discharge(amount, container.getTier(), true, false, false);
     }
 
     @Override

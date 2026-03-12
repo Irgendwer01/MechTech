@@ -86,6 +86,17 @@ public interface IModule extends IItemBehaviour {
     }
 
     /**
+     * Called each tick (after separate server & client) when the armor piece with this module is worn
+     *
+     * @param world             current world
+     * @param player            wearing player
+     * @param modularArmorPiece armor piece
+     * @param armorData         nbt data of armor piece
+     */
+    default void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
+    }
+
+    /**
      * Called each tick (serverside) when the armor piece with this module is worn
      *
      * @param world             current world
