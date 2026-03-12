@@ -97,7 +97,7 @@ public class ModularArmorStats implements IItemMaxStackSizeProvider, IItemCapabi
             }
 
             /**
-             * Transfer limit is defined be contained batteries
+             * Transfer limit is defined by contained batteries
              */
             @Override
             public long getTransferLimit() {
