@@ -190,6 +190,7 @@ public class ModularArmor implements ISpecialArmorLogic {
             } else {
                 module.onServerTick(world, player, itemStack, nbt);
             }
+            module.onTick(world, player, itemStack, nbt);
         }
         setArmorData(itemStack, nbt);
     }
@@ -352,8 +353,9 @@ public class ModularArmor implements ISpecialArmorLogic {
                 IElectricItem electricItem = battery.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
                 if (tier == 0) {
                     tier = electricItem.getTier();
+                } else {
+                    tier = Math.min(tier, electricItem.getTier());
                 }
-                tier = Math.min(tier, electricItem.getTier());
             }
         }
         return tier;
@@ -371,8 +373,9 @@ public class ModularArmor implements ISpecialArmorLogic {
                 IElectricItem electricItem = battery.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
                 if (transferLimit == 0) {
                     transferLimit = electricItem.getTransferLimit();
+                }  else  {
+                    transferLimit = Math.min(transferLimit, electricItem.getTransferLimit());
                 }
-                transferLimit = Math.min(transferLimit, electricItem.getTransferLimit());
             }
         }
         return transferLimit;
