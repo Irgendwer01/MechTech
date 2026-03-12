@@ -132,7 +132,7 @@ public class ToroidBlock implements IToroidBlock {
             return this;
         }
         if (TORUS_BLOCK_MAP.containsKey(name)) {
-            CraftTweakerAPI.logError("Can't register ToroidBlock '" + name + "' as it already exists");
+            GTLog.logger.error("Can't register ToroidBlock '{}' as it already exists", name);
         } else {
             TORUS_BLOCK_MAP.put(name, this);
         }
