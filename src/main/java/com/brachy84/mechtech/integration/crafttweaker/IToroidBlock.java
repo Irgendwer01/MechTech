@@ -63,15 +63,6 @@ public interface IToroidBlock {
     void setRangeModifierCT(float rangeModifier);
 
     @ZenMethod
-    default IToroidBlock setAmpsPerBlock(float ampsPerBlock) {
-        setAmpsPerBlockCT(ampsPerBlock);
-        return this;
-    }
-
-    @ZenSetter("ampsPerBlock")
-    void setAmpsPerBlockCT(float ampsPerBlock);
-
-    @ZenMethod
     IToroidBlock register();
 
     @ZenGetter("dmgModifier")
@@ -81,10 +72,6 @@ public interface IToroidBlock {
     @ZenGetter("rangeModifier")
     @ZenMethod
     float getRangeModifier();
-
-    @ZenGetter("ampsPerBlock")
-    @ZenMethod
-    float getAmpsPerBlock();
 
     @ZenGetter("name")
     @ZenMethod

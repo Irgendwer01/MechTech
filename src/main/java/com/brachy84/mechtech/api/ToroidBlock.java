@@ -46,7 +46,7 @@ public class ToroidBlock implements IToroidBlock {
 
     public static void remove(String name) {
         if (!TORUS_BLOCK_MAP.containsKey(name)) {
-            CraftTweakerAPI.logError("Could not find ToroidBlock with name " + name);
+            GTLog.logger.error("Could not find ToroidBlock with name {}", name);
             return;
         }
         TORUS_BLOCK_MAP.remove(name);
@@ -63,7 +63,6 @@ public class ToroidBlock implements IToroidBlock {
     private final IBlockState state;
     public float dmgModifier = 0;
     public float rangeModifier = 0;
-    public float ampsPerBlock = 0;
     private final String name;
 
     public ToroidBlock(String name, IBlockState state) {
@@ -73,7 +72,7 @@ public class ToroidBlock implements IToroidBlock {
 
     public static ToroidBlock create(String name, crafttweaker.api.block.IBlockState state) {
         if (state == null) {
-            CraftTweakerAPI.logError("Can't create ToroidBlock of null BlockState");
+            GTLog.logger.error("Can't create ToroidBlock of null BlockState");
             return NULL;
         }
         return create(name, CraftTweakerMC.getBlockState(state));
@@ -127,11 +126,6 @@ public class ToroidBlock implements IToroidBlock {
     }
 
     @Override
-    public void setAmpsPerBlockCT(float ampsPerBlock) {
-        this.ampsPerBlock = ampsPerBlock;
-    }
-
-    @Override
     public ToroidBlock register() {
         if (state.getBlock() == Blocks.AIR) {
             GTLog.logger.error("Can not register TorusBlock with AIR block state");
@@ -153,11 +147,6 @@ public class ToroidBlock implements IToroidBlock {
     @Override
     public float getRangeModifier() {
         return rangeModifier;
-    }
-
-    @Override
-    public float getAmpsPerBlock() {
-        return ampsPerBlock;
     }
 
     @Override
