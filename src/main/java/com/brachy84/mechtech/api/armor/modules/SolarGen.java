@@ -1,12 +1,7 @@
 package com.brachy84.mechtech.api.armor.modules;
 
-import com.brachy84.mechtech.api.armor.IModule;
-import com.brachy84.mechtech.api.armor.Modules;
-import com.google.common.collect.Lists;
-import gregtech.api.capability.GregtechCapabilities;
-import gregtech.api.capability.IElectricItem;
-import gregtech.api.items.metaitem.MetaItem;
-import gregtech.common.items.MetaItems;
+import java.util.Collection;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -16,7 +11,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.Collection;
+import com.brachy84.mechtech.api.armor.IModule;
+import com.brachy84.mechtech.api.armor.Modules;
+import com.google.common.collect.Lists;
+
+import gregtech.api.capability.GregtechCapabilities;
+import gregtech.api.capability.IElectricItem;
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.common.items.MetaItems;
 
 public class SolarGen implements IModule {
 
@@ -52,7 +54,6 @@ public class SolarGen implements IModule {
         }
     }
 
-
     @Override
     public boolean canPlaceIn(EntityEquipmentSlot slot, ItemStack modularArmorPiece, IItemHandler modularSlots) {
         return slot == EntityEquipmentSlot.HEAD;
@@ -70,16 +71,16 @@ public class SolarGen implements IModule {
 
     @Override
     public MetaItem<?>.MetaValueItem getMetaValueItem() {
-        switch (tier) {
-            case 1: return MetaItems.COVER_SOLAR_PANEL_LV;
-            case 2: return MetaItems.COVER_SOLAR_PANEL_MV;
-            case 3: return MetaItems.COVER_SOLAR_PANEL_HV;
-            case 4: return MetaItems.COVER_SOLAR_PANEL_EV;
-            case 5: return MetaItems.COVER_SOLAR_PANEL_IV;
-            case 6: return MetaItems.COVER_SOLAR_PANEL_LUV;
-            case 7: return MetaItems.COVER_SOLAR_PANEL_ZPM;
-            case 8: return MetaItems.COVER_SOLAR_PANEL_UV;
-        }
-        throw new IllegalArgumentException("Invalid tier: " + tier);
+        return switch (tier) {
+            case 1 -> MetaItems.COVER_SOLAR_PANEL_LV;
+            case 2 -> MetaItems.COVER_SOLAR_PANEL_MV;
+            case 3 -> MetaItems.COVER_SOLAR_PANEL_HV;
+            case 4 -> MetaItems.COVER_SOLAR_PANEL_EV;
+            case 5 -> MetaItems.COVER_SOLAR_PANEL_IV;
+            case 6 -> MetaItems.COVER_SOLAR_PANEL_LUV;
+            case 7 -> MetaItems.COVER_SOLAR_PANEL_ZPM;
+            case 8 -> MetaItems.COVER_SOLAR_PANEL_UV;
+            default -> throw new IllegalArgumentException("Invalid tier: " + tier);
+        };
     }
 }

@@ -1,10 +1,12 @@
 package com.brachy84.mechtech.api.armor;
 
-import gregtech.api.GTValues;
-import gregtech.api.capability.GregtechCapabilities;
-import gregtech.api.capability.IElectricItem;
-import gregtech.api.items.metaitem.stats.IItemCapabilityProvider;
-import gregtech.api.items.metaitem.stats.IItemMaxStackSizeProvider;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -14,13 +16,13 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
+
 import org.apache.commons.lang3.ArrayUtils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiConsumer;
+import gregtech.api.capability.GregtechCapabilities;
+import gregtech.api.capability.IElectricItem;
+import gregtech.api.items.metaitem.stats.IItemCapabilityProvider;
+import gregtech.api.items.metaitem.stats.IItemMaxStackSizeProvider;
 
 public class ModularArmorStats implements IItemMaxStackSizeProvider, IItemCapabilityProvider {
 
@@ -29,6 +31,7 @@ public class ModularArmorStats implements IItemMaxStackSizeProvider, IItemCapabi
     @Override
     public ICapabilityProvider createProvider(ItemStack itemStack) {
         return new ICapabilityProvider() {
+
             @Override
             public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
                 return getCapability(capability, facing) != null;
@@ -55,6 +58,7 @@ public class ModularArmorStats implements IItemMaxStackSizeProvider, IItemCapabi
 
     private static IElectricItem createElectricItem(ItemStack stack) {
         return new IElectricItem() {
+
             private List<BiConsumer<ItemStack, Long>> listeners = new ArrayList<>();
 
             @Override

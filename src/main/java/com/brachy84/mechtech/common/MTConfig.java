@@ -1,7 +1,8 @@
 package com.brachy84.mechtech.common;
 
-import com.brachy84.mechtech.MechTech;
 import net.minecraftforge.common.config.Config;
+
+import com.brachy84.mechtech.MechTech;
 
 @Config(modid = MechTech.MODID)
 public class MTConfig {
@@ -14,6 +15,7 @@ public class MTConfig {
     public static boolean debug = false;
 
     public static class ModularArmor {
+
         public Modules modules = new Modules();
 
         @Config.Comment("Amount of module slots of the helmet")
@@ -42,6 +44,7 @@ public class MTConfig {
     }
 
     public static class Modules {
+
         @Config.Name("Binocular zoom level (default: 5x zoom)")
         @Config.RangeDouble
         public double binocularZoom = 5;

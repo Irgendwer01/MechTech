@@ -1,16 +1,12 @@
 package com.brachy84.mechtech.api.armor;
 
-import com.brachy84.mechtech.common.MTConfig;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import gregtech.api.GTValues;
-import gregtech.api.capability.GregtechCapabilities;
-import gregtech.api.capability.IElectricItem;
-import gregtech.api.items.armor.ArmorMetaItem;
-import gregtech.api.items.armor.IArmorLogic;
-import gregtech.api.items.armor.ISpecialArmorLogic;
-import gregtech.api.items.metaitem.stats.IItemBehaviour;
-import gregtech.api.util.GTLog;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -29,13 +25,21 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import com.brachy84.mechtech.common.MTConfig;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+
+import gregtech.api.GTValues;
+import gregtech.api.capability.GregtechCapabilities;
+import gregtech.api.capability.IElectricItem;
+import gregtech.api.items.armor.ArmorMetaItem;
+import gregtech.api.items.armor.IArmorLogic;
+import gregtech.api.items.armor.ISpecialArmorLogic;
+import gregtech.api.items.metaitem.stats.IItemBehaviour;
+import gregtech.api.util.GTLog;
 
 public class ModularArmor implements ISpecialArmorLogic {
 
@@ -56,7 +60,6 @@ public class ModularArmor implements ISpecialArmorLogic {
     private final EntityEquipmentSlot slot;
     private final int maxFluidSize;
 
-
     public ModularArmor(EntityEquipmentSlot slot, int moduleSlots, int maxFluidSize) {
         this.slot = slot;
         this.moduleSlots = moduleSlots;
@@ -72,9 +75,12 @@ public class ModularArmor implements ISpecialArmorLogic {
     }
 
     @Override
-    public ISpecialArmor.ArmorProperties getProperties(EntityLivingBase entityLivingBase, @Nonnull ItemStack itemStack, DamageSource damageSource, double damage, EntityEquipmentSlot entityEquipmentSlot) {
+    public ISpecialArmor.ArmorProperties getProperties(EntityLivingBase entityLivingBase, @Nonnull ItemStack itemStack,
+                                                       DamageSource damageSource, double damage,
+                                                       EntityEquipmentSlot entityEquipmentSlot) {
         if (MTConfig.debug) {
-            GTLog.logger.info("Get Properties for source {}, damage {}, slot {}", damageSource.damageType, damage, slot);
+            GTLog.logger.info("Get Properties for source {}, damage {}, slot {}", damageSource.damageType, damage,
+                    slot);
         }
         NBTTagCompound nbt = itemStack.getTagCompound();
         if (nbt == null || !nbt.hasKey(MODULES))
@@ -94,7 +100,8 @@ public class ModularArmor implements ISpecialArmorLogic {
                     armorModules.add(absorbResult);
                 }
                 if (module instanceof ISpecialArmorModule) {
-                    AbsorbResult absorbResult = ((ISpecialArmorModule) module).getArmorProperties(entityLivingBase, itemStack, moduleNbt, damageSource, damage, entityEquipmentSlot);
+                    AbsorbResult absorbResult = ((ISpecialArmorModule) module).getArmorProperties(entityLivingBase,
+                            itemStack, moduleNbt, damageSource, damage, entityEquipmentSlot);
                     if (absorbResult != null && !absorbResult.isZero()) {
                         absorbResult.setModule(module, moduleNbt);
                         specialArmorModules.add(absorbResult);
@@ -124,7 +131,8 @@ public class ModularArmor implements ISpecialArmorLogic {
                 GTLog.logger.info("  do {} special armor module damage", moduleDamage);
             }
             if (absorbResult.module instanceof IDurabilityModule) {
-                damage -= ((IDurabilityModule) absorbResult.module).damage(entityLivingBase, itemStack, absorbResult.moduleData, damageSource, moduleDamage, entityEquipmentSlot);
+                damage -= ((IDurabilityModule) absorbResult.module).damage(entityLivingBase, itemStack,
+                        absorbResult.moduleData, damageSource, moduleDamage, entityEquipmentSlot);
             } else {
                 damage -= moduleDamage;
             }
@@ -152,7 +160,8 @@ public class ModularArmor implements ISpecialArmorLogic {
             }
             for (AbsorbResult absorbResult : armorModules) {
                 if (absorbResult.module instanceof IDurabilityModule) {
-                    damage -= ((IDurabilityModule) absorbResult.module).damage(entityLivingBase, itemStack, absorbResult.moduleData, damageSource, moduleDamage, entityEquipmentSlot);
+                    damage -= ((IDurabilityModule) absorbResult.module).damage(entityLivingBase, itemStack,
+                            absorbResult.moduleData, damageSource, moduleDamage, entityEquipmentSlot);
                 } else {
                     damage -= moduleDamage;
                 }
@@ -217,11 +226,13 @@ public class ModularArmor implements ISpecialArmorLogic {
     public void addToolComponents(ArmorMetaItem.ArmorMetaValueItem mvi) {
         mvi.addComponents(new ModularArmorStats());
         mvi.addComponents(new IItemBehaviour() {
+
             @Override
             public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
                 if (player.getHeldItem(hand).getItem() instanceof ArmorMetaItem) {
                     ItemStack armor = player.getHeldItem(hand);
-                    if (armor.getItem() instanceof ArmorMetaItem && player.inventory.armorInventory.get(slot.getIndex()).isEmpty() && !player.isSneaking()) {
+                    if (armor.getItem() instanceof ArmorMetaItem &&
+                            player.inventory.armorInventory.get(slot.getIndex()).isEmpty() && !player.isSneaking()) {
                         player.inventory.armorInventory.set(slot.getIndex(), armor.copy());
                         player.setHeldItem(hand, ItemStack.EMPTY);
                         player.playSound(new SoundEvent(new ResourceLocation("item.armor.equip_generic")), 1.0F, 1.0F);
@@ -243,12 +254,14 @@ public class ModularArmor implements ISpecialArmorLogic {
     }
 
     @Override
-    public boolean handleUnblockableDamage(EntityLivingBase entity, @Nonnull ItemStack armor, DamageSource source, double damage, EntityEquipmentSlot equipmentSlot) {
+    public boolean handleUnblockableDamage(EntityLivingBase entity, @Nonnull ItemStack armor, DamageSource source,
+                                           double damage, EntityEquipmentSlot equipmentSlot) {
         return true;
     }
 
     @Override
-    public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot equipmentSlot, ItemStack itemStack) {
+    public Multimap<String, AttributeModifier> getAttributeModifiers(EntityEquipmentSlot equipmentSlot,
+                                                                     ItemStack itemStack) {
         ImmutableMultimap.Builder<String, AttributeModifier> builder = new ImmutableMultimap.Builder<>();
         return builder.build();
     }
@@ -302,7 +315,8 @@ public class ModularArmor implements ISpecialArmorLogic {
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound batteryNbt = list.getCompoundTagAt(i);
                 ItemStack batteryStack = new ItemStack(batteryNbt);
-                IElectricItem electricItem = batteryStack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+                IElectricItem electricItem = batteryStack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM,
+                        null);
                 if (electricItem != null) {
                     amount -= electricItem.charge(amount, tier, false, simulate);
                     batteryNbt = batteryStack.serializeNBT();
@@ -327,7 +341,8 @@ public class ModularArmor implements ISpecialArmorLogic {
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound batteryNbt = list.getCompoundTagAt(i);
                 ItemStack batteryStack = new ItemStack(batteryNbt);
-                IElectricItem electricItem = batteryStack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+                IElectricItem electricItem = batteryStack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM,
+                        null);
                 if (electricItem != null) {
                     amount -= electricItem.discharge(amount, tier, false, false, simulate);
                     batteryNbt = batteryStack.serializeNBT();
@@ -373,7 +388,7 @@ public class ModularArmor implements ISpecialArmorLogic {
                 IElectricItem electricItem = battery.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
                 if (transferLimit == 0) {
                     transferLimit = electricItem.getTransferLimit();
-                }  else  {
+                } else {
                     transferLimit = Math.min(transferLimit, electricItem.getTransferLimit());
                 }
             }
@@ -392,7 +407,8 @@ public class ModularArmor implements ISpecialArmorLogic {
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound batteryNbt = list.getCompoundTagAt(i);
                 ItemStack batteryStack = new ItemStack(batteryNbt);
-                IElectricItem electricItem = batteryStack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+                IElectricItem electricItem = batteryStack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM,
+                        null);
                 if (electricItem != null) {
                     cap += electricItem.getMaxCharge();
                 }
@@ -412,7 +428,8 @@ public class ModularArmor implements ISpecialArmorLogic {
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound batteryNbt = list.getCompoundTagAt(i);
                 ItemStack batteryStack = new ItemStack(batteryNbt);
-                IElectricItem electricItem = batteryStack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+                IElectricItem electricItem = batteryStack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM,
+                        null);
                 if (electricItem != null) {
                     cap += electricItem.getCharge();
                 }
@@ -435,7 +452,8 @@ public class ModularArmor implements ISpecialArmorLogic {
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound batteryNbt = list.getCompoundTagAt(i);
                 ItemStack batteryStack = new ItemStack(batteryNbt);
-                IFluidHandlerItem fluidHandler = batteryStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+                IFluidHandlerItem fluidHandler = batteryStack
+                        .getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
                 if (fluidHandler != null) {
                     FluidStack drained = fluidHandler.drain(toDrain, !simulate);
                     if (drained != null && drained.amount > 0) {
@@ -465,7 +483,8 @@ public class ModularArmor implements ISpecialArmorLogic {
             for (int i = 0; i < list.tagCount(); i++) {
                 NBTTagCompound batteryNbt = list.getCompoundTagAt(i);
                 ItemStack batteryStack = new ItemStack(batteryNbt);
-                IFluidHandlerItem fluidHandler = batteryStack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+                IFluidHandlerItem fluidHandler = batteryStack
+                        .getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
                 if (fluidHandler != null) {
                     int filled = fluidHandler.fill(toFill, !simulate);
                     if (filled > 0) {
@@ -490,7 +509,8 @@ public class ModularArmor implements ISpecialArmorLogic {
             List<IFluidHandlerItem> fluidHandlers = new ArrayList<>();
             for (int i = 0; i < list.tagCount(); i++) {
                 ItemStack item = new ItemStack(list.getCompoundTagAt(i));
-                IFluidHandlerItem fluidHandler = item.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+                IFluidHandlerItem fluidHandler = item
+                        .getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
                 if (fluidHandler != null) {
                     fluidHandlers.add(fluidHandler);
                 }

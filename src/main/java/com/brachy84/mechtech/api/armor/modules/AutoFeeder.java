@@ -1,15 +1,7 @@
 package com.brachy84.mechtech.api.armor.modules;
 
-import com.brachy84.mechtech.MechTech;
-import com.brachy84.mechtech.api.armor.AbstractModule;
-import com.brachy84.mechtech.api.armor.ModularArmor;
-import com.brachy84.mechtech.common.items.MTMetaItems;
-import com.brachy84.mechtech.network.NetworkHandler;
-import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
-import gregtech.api.items.armor.ArmorUtils;
-import gregtech.api.items.metaitem.MetaItem;
-import gregtech.api.items.metaitem.stats.IFoodBehavior;
-import gregtech.api.items.metaitem.stats.IItemComponent;
+import java.util.List;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -19,7 +11,16 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.List;
+import com.brachy84.mechtech.MechTech;
+import com.brachy84.mechtech.api.armor.AbstractModule;
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.common.items.MTMetaItems;
+import com.brachy84.mechtech.network.NetworkHandler;
+import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
+
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.items.metaitem.stats.IFoodBehavior;
+import gregtech.api.items.metaitem.stats.IItemComponent;
 
 public class AutoFeeder extends AbstractModule {
 
@@ -36,9 +37,11 @@ public class AutoFeeder extends AbstractModule {
 
     @Override
     public void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
-        if (toggleTimer == 0 && MechTech.keys.AUTO_FEEDER_MODE_SWITCH.isKeyDown(player) && MechTech.keys.AUTO_FEEDER_MODE_SWITCH.isPressed(player)) {
+        if (toggleTimer == 0 && MechTech.keys.AUTO_FEEDER_MODE_SWITCH.isKeyDown(player) &&
+                MechTech.keys.AUTO_FEEDER_MODE_SWITCH.isPressed(player)) {
             toggleTimer = 5;
-            NetworkHandler.sendToServer(new CModularArmorSwitchModuleMode(ModularArmor.get(modularArmorPiece).getEquipmentSlot(modularArmorPiece), "feeder_enabled"));
+            NetworkHandler.sendToServer(new CModularArmorSwitchModuleMode(
+                    ModularArmor.get(modularArmorPiece).getEquipmentSlot(modularArmorPiece), "feeder_enabled"));
         }
         if (toggleTimer > 0) {
             toggleTimer--;

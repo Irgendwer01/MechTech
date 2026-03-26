@@ -63,9 +63,9 @@ public class AbsorbResult implements Comparable<AbsorbResult> {
         if (o.priority != priority) {
             return o.priority - priority;
         }
-        double left =  (  ratio == 0 ? 0 :   max * 100.0D /   ratio);
+        double left = (ratio == 0 ? 0 : max * 100.0D / ratio);
         double right = (o.ratio == 0 ? 0 : o.max * 100.0D / o.ratio);
-        return (int)(left - right);
+        return (int) (left - right);
     }
 
     @Override
@@ -79,4 +79,3 @@ public class AbsorbResult implements Comparable<AbsorbResult> {
                 '}';
     }
 }
-

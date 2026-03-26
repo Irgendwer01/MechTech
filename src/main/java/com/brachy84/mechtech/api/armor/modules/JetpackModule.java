@@ -1,17 +1,10 @@
 package com.brachy84.mechtech.api.armor.modules;
 
-import com.brachy84.mechtech.api.armor.IModule;
-import com.brachy84.mechtech.api.armor.ModularArmor;
-import com.brachy84.mechtech.api.armor.Modules;
-import com.brachy84.mechtech.network.NetworkHandler;
-import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
-import com.google.common.collect.Lists;
-import gregtech.api.capability.GregtechCapabilities;
-import gregtech.api.capability.IElectricItem;
-import gregtech.api.items.metaitem.MetaItem;
-import gregtech.api.util.input.KeyBind;
-import gregtech.common.items.MetaItems;
-import gregtech.common.items.armor.IJetpack;
+import java.util.Collection;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -21,9 +14,19 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 
-import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.List;
+import com.brachy84.mechtech.api.armor.IModule;
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.api.armor.Modules;
+import com.brachy84.mechtech.network.NetworkHandler;
+import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
+import com.google.common.collect.Lists;
+
+import gregtech.api.capability.GregtechCapabilities;
+import gregtech.api.capability.IElectricItem;
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.util.input.KeyBind;
+import gregtech.common.items.MetaItems;
+import gregtech.common.items.armor.IJetpack;
 
 public class JetpackModule implements IJetpack, IModule {
 
@@ -49,7 +52,6 @@ public class JetpackModule implements IJetpack, IModule {
         if (toggleTimer > 0) {
             --toggleTimer;
         }
-
     }
 
     @Override
@@ -110,7 +112,7 @@ public class JetpackModule implements IJetpack, IModule {
         if (armorData != null) {
             String status = I18n.format("metaarmor.hud.status.disabled");
             if (armorData.hasKey("hover")) {
-                 status = (armorData.getBoolean("hover") ? I18n.format("metaarmor.hud.status.enabled") :
+                status = (armorData.getBoolean("hover") ? I18n.format("metaarmor.hud.status.enabled") :
                         I18n.format("metaarmor.hud.status.disabled"));
             }
             String result = I18n.format("metaarmor.hud.hover_mode", status);

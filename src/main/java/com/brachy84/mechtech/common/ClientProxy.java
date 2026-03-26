@@ -1,12 +1,8 @@
 package com.brachy84.mechtech.common;
 
-import com.brachy84.mechtech.api.armor.IModule;
-import com.brachy84.mechtech.api.armor.ModularArmor;
-import com.brachy84.mechtech.api.armor.modules.Binoculars;
-import com.brachy84.mechtech.client.ClientHandler;
-import com.brachy84.mechtech.common.items.MTMetaItems;
-import gregtech.api.items.armor.ArmorUtils;
-import it.unimi.dsi.fastutil.longs.LongArrayList;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.resources.I18n;
@@ -21,10 +17,17 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
 import org.lwjgl.input.Mouse;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.brachy84.mechtech.api.armor.IModule;
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.api.armor.modules.Binoculars;
+import com.brachy84.mechtech.client.ClientHandler;
+import com.brachy84.mechtech.common.items.MTMetaItems;
+
+import gregtech.api.items.armor.ArmorUtils;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 
 @SideOnly(Side.CLIENT)
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -34,7 +37,6 @@ public class ClientProxy extends CommonProxy {
     private static final List<String> hudStrings = new ArrayList<>();
     private static final LongArrayList charge = new LongArrayList();
     private static final LongArrayList maxCharge = new LongArrayList();
-
 
     @Override
     public void preLoad() {
@@ -61,7 +63,8 @@ public class ClientProxy extends CommonProxy {
                 }
             }
             if (hasArmor) {
-                HUD.newString(I18n.format("metaarmor.hud.energy_lvl", String.format("%.1f", batteryPercentage()) + "%"));
+                HUD.newString(
+                        I18n.format("metaarmor.hud.energy_lvl", String.format("%.1f", batteryPercentage()) + "%"));
                 if (!hudStrings.isEmpty()) {
                     for (String string : hudStrings) {
                         HUD.newString(string);
@@ -87,11 +90,12 @@ public class ClientProxy extends CommonProxy {
     }
 
     @SideOnly(Side.CLIENT)
-    @SubscribeEvent(priority = EventPriority.LOW) //set to low so other mods don't accidentally destroy it easily
+    @SubscribeEvent(priority = EventPriority.LOW) // set to low so other mods don't accidentally destroy it easily
     public static void handleFovEvent(FOVUpdateEvent event) {
-
-        IAttributeInstance iattributeinstance = event.getEntity().getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-        float f = 1 / ((float) (((iattributeinstance.getAttributeValue() / (double) event.getEntity().capabilities.getWalkSpeed() + 1.0D) / 2.0D)));
+        IAttributeInstance iattributeinstance = event.getEntity()
+                .getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+        float f = 1 / ((float) (((iattributeinstance.getAttributeValue() /
+                (double) event.getEntity().capabilities.getWalkSpeed() + 1.0D) / 2.0D)));
 
         EntityPlayerSP player = Minecraft.getMinecraft().player;
 
@@ -104,7 +108,7 @@ public class ClientProxy extends CommonProxy {
                 stack = player.getHeldItemOffhand();
             }
             if (stack.getItem() == binoculars.getItem() && stack.getMetadata() == binoculars.getMetadata()) {
-                event.setNewfov(event.getNewfov() * zoom * f);//*speedFOV;
+                event.setNewfov(event.getNewfov() * zoom * f);// *speedFOV;
                 return;
             }
         }
@@ -118,7 +122,7 @@ public class ClientProxy extends CommonProxy {
             List<IModule> modules = ModularArmor.getModulesOf(helmet);
             for (IModule module : modules) {
                 if (module instanceof Binoculars) {
-                    event.setNewfov(event.getNewfov() * zoom * f);//*speedFOV;
+                    event.setNewfov(event.getNewfov() * zoom * f);// *speedFOV;
                     break;
                 }
             }

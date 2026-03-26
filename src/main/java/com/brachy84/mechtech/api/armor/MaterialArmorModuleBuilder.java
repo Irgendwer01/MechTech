@@ -1,16 +1,15 @@
 package com.brachy84.mechtech.api.armor;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+
 import com.brachy84.mechtech.api.armor.modules.MaterialArmorModule;
-import com.brachy84.mechtech.integration.crafttweaker.IArmorModule;
+
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.unification.material.Material;
 import gregtech.api.unification.material.properties.PropertyKey;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import stanhebben.zenscript.annotations.Optional;
-import stanhebben.zenscript.annotations.ZenMethod;
 
-public class MaterialArmorModuleBuilder implements IArmorModule {
+public class MaterialArmorModuleBuilder {
 
     public final int id;
     public final Material material;
@@ -57,8 +56,7 @@ public class MaterialArmorModuleBuilder implements IArmorModule {
         return this;
     }
 
-    @Override
-    public MaterialArmorModuleBuilder armor(double armor, @Optional double toughness, @Optional int durability) {
+    public MaterialArmorModuleBuilder armor(double armor, double toughness, int durability) {
         if (armor >= 0) {
             this.armor = armor;
         }
@@ -85,43 +83,35 @@ public class MaterialArmorModuleBuilder implements IArmorModule {
         return this;
     }
 
-    @Override
     public MaterialArmorModuleBuilder dontGenerateRecipe() {
         this.doGenerateRecipe = false;
         return this;
     }
 
-    @Override
     public double getArmor() {
         return armor;
     }
 
-    @Override
     public double getToughness() {
         return toughness;
     }
 
-    @Override
     public int getDurability() {
         return durability;
     }
 
-    @Override
     public void setArmor(double armor) {
         this.armor = armor;
     }
 
-    @Override
     public void setToughness(double toughness) {
         this.toughness = toughness;
     }
 
-    @Override
     public void setDurability(int durability) {
         this.durability = durability;
     }
 
-    @ZenMethod
     public void registerModule() {
         armor = Math.max(armor, 0);
         toughness = Math.max(toughness, 0);

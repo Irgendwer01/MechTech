@@ -1,9 +1,10 @@
 package com.brachy84.mechtech.api.armor;
 
-import gregtech.api.items.armor.ArmorUtils;
-import gregtech.api.items.metaitem.MetaItem;
-import gregtech.api.items.metaitem.stats.IItemBehaviour;
-import gregtech.api.items.metaitem.stats.IItemComponent;
+import java.util.*;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,9 +17,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandler;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.*;
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.items.metaitem.stats.IItemBehaviour;
+import gregtech.api.items.metaitem.stats.IItemComponent;
 
 public interface IModule extends IItemBehaviour {
 
@@ -52,7 +53,8 @@ public interface IModule extends IItemBehaviour {
         ItemStack moduleItem = module.getMetaValueItem().getStackForm();
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
-            if (!stack.isEmpty() && moduleItem.getItem() == stack.getItem() && moduleItem.getMetadata() == stack.getMetadata())
+            if (!stack.isEmpty() && moduleItem.getItem() == stack.getItem() &&
+                    moduleItem.getMetadata() == stack.getMetadata())
                 count += stack.getCount();
         }
         return count;
@@ -68,7 +70,8 @@ public interface IModule extends IItemBehaviour {
     }
 
     /**
-     * Called when the module is placed in the workbench. If any if these modules is not already there, it can not be placed.
+     * Called when the module is placed in the workbench. If any if these modules is not already there, it can not be
+     * placed.
      *
      * @return required modules
      */
@@ -77,7 +80,8 @@ public interface IModule extends IItemBehaviour {
     }
 
     /**
-     * Called when the module is placed in the workbench. If any if these modules is already there, it can not be placed.
+     * Called when the module is placed in the workbench. If any if these modules is already there, it can not be
+     * placed.
      *
      * @return incompatible modules
      */
@@ -93,8 +97,7 @@ public interface IModule extends IItemBehaviour {
      * @param modularArmorPiece armor piece
      * @param armorData         nbt data of armor piece
      */
-    default void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
-    }
+    default void onTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {}
 
     /**
      * Called each tick (serverside) when the armor piece with this module is worn
@@ -104,8 +107,8 @@ public interface IModule extends IItemBehaviour {
      * @param modularArmorPiece armor piece
      * @param armorData         nbt data of armor piece
      */
-    default void onServerTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
-    }
+    default void onServerTick(World world, EntityPlayer player, ItemStack modularArmorPiece,
+                              NBTTagCompound armorData) {}
 
     /**
      * Called each tick (clientside) when the armor piece with this module is worn
@@ -115,9 +118,8 @@ public interface IModule extends IItemBehaviour {
      * @param modularArmorPiece armor piece
      * @param armorData         nbt data of armor piece
      */
-    default void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
-    }
-
+    default void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece,
+                              NBTTagCompound armorData) {}
 
     /**
      * Called when the worn modular armor piece is taken of
@@ -127,15 +129,15 @@ public interface IModule extends IItemBehaviour {
      * @param modularArmorPiece armor piece
      * @param newStack          the replacing item
      */
-    default void onUnequip(World world, EntityLivingBase player, ItemStack modularArmorPiece, ItemStack newStack) {
-    }
+    default void onUnequip(World world, EntityLivingBase player, ItemStack modularArmorPiece, ItemStack newStack) {}
 
     /**
      * Used to determin if the module can be placed inside that armor piece
      *
      * @param slot              slot of the armor piece
      * @param modularArmorPiece armor piece
-     * @param modularSlots      item handler of the modular slots of the {@link com.brachy84.mechtech.common.machines.MetaTileEntityArmorWorkbench}
+     * @param modularSlots      item handler of the modular slots of the
+     *                          {@link com.brachy84.mechtech.common.machines.MetaTileEntityArmorWorkbench}
      * @return if the armor accepts this module
      */
     boolean canPlaceIn(EntityEquipmentSlot slot, ItemStack modularArmorPiece, IItemHandler modularSlots);
@@ -148,8 +150,8 @@ public interface IModule extends IItemBehaviour {
      * @param lines       tooltip
      * @param tooltipFlag flag
      */
-    default void addTooltip(@Nonnull ItemStack itemStack, @Nullable World worldIn, @Nonnull List<String> lines, @Nonnull ITooltipFlag tooltipFlag) {
-    }
+    default void addTooltip(@Nonnull ItemStack itemStack, @Nullable World worldIn, @Nonnull List<String> lines,
+                            @Nonnull ITooltipFlag tooltipFlag) {}
 
     /**
      * Called when the module is saved to the armor piece
@@ -157,11 +159,11 @@ public interface IModule extends IItemBehaviour {
      * @param nbt        armor data (write here)
      * @param moduleItem this module as item
      */
-    default void writeExtraDataToArmor(NBTTagCompound nbt, ItemStack moduleItem) {
-    }
+    default void writeExtraDataToArmor(NBTTagCompound nbt, ItemStack moduleItem) {}
 
     /**
-     * Called when the ItemStack from this module is created. Write data here that was written in {@link #writeExtraDataToArmor(NBTTagCompound, ItemStack)}
+     * Called when the ItemStack from this module is created. Write data here that was written in
+     * {@link #writeExtraDataToArmor(NBTTagCompound, ItemStack)}
      *
      * @param nbt data stored in the armor
      * @return data stored in the item
@@ -198,13 +200,13 @@ public interface IModule extends IItemBehaviour {
      * Adds lines to the HUD
      *
      * @param armorPiece armor piece item
-     * @param armorData  data stored in armor (This is NOT the data from {@link #writeExtraDataToArmor(NBTTagCompound, ItemStack)}),
+     * @param armorData  data stored in armor (This is NOT the data from
+     *                   {@link #writeExtraDataToArmor(NBTTagCompound, ItemStack)}),
      *                   it is the same data as in {@link #onClientTick(World, EntityPlayer, ItemStack, NBTTagCompound))
      * @param hudStrings Strings to add to the HUD
      */
     @SideOnly(Side.CLIENT)
-    default void addHUDInfo(ItemStack armorPiece, NBTTagCompound armorData, List<String> hudStrings) {
-    }
+    default void addHUDInfo(ItemStack armorPiece, NBTTagCompound armorData, List<String> hudStrings) {}
 
     /**
      * Adds tooltip lines to the item form

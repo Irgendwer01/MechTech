@@ -1,10 +1,5 @@
 package com.brachy84.mechtech.api.armor.modules;
 
-import com.brachy84.mechtech.api.armor.AbstractModule;
-import com.brachy84.mechtech.api.armor.ModularArmor;
-import com.brachy84.mechtech.common.items.MTMetaItems;
-import gregtech.api.items.metaitem.MetaItem;
-import gregtech.api.unification.material.Materials;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -12,6 +7,13 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
+
+import com.brachy84.mechtech.api.armor.AbstractModule;
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.common.items.MTMetaItems;
+
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.unification.material.Materials;
 
 public class OxygenMask extends AbstractModule {
 

@@ -1,9 +1,9 @@
 package com.brachy84.mechtech.common.machines;
 
+import java.util.Collections;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
-
-import java.util.Collections;
 
 public class CustomItemHandler extends ItemStackHandler {
 

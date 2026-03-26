@@ -1,21 +1,15 @@
 package com.brachy84.mechtech.api.armor.modules;
 
+import java.util.Collection;
+
+import net.minecraft.util.EnumParticleTypes;
+
 import com.brachy84.mechtech.api.armor.IModule;
 import com.brachy84.mechtech.api.armor.Modules;
 import com.google.common.collect.Lists;
-import gregtech.api.capability.GregtechCapabilities;
-import gregtech.api.capability.IElectricItem;
-import gregtech.api.items.metaitem.MetaItem;
-import gregtech.api.util.input.KeyBind;
-import gregtech.common.items.MetaItems;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
 
-import java.util.Collection;
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.common.items.MetaItems;
 
 public class AdvancedJetpack extends JetpackModule {
 

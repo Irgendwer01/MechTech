@@ -1,23 +1,9 @@
 package com.brachy84.mechtech.api.armor.modules;
 
-import baubles.api.BaublesApi;
-import baubles.api.cap.IBaublesItemHandler;
-import com.brachy84.mechtech.MechTech;
-import com.brachy84.mechtech.api.armor.IModule;
-import com.brachy84.mechtech.api.armor.ModularArmor;
-import com.brachy84.mechtech.common.MTConfig;
-import com.brachy84.mechtech.common.items.MTMetaItems;
-import com.brachy84.mechtech.network.NetworkHandler;
-import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
-import com.brachy84.mechtech.network.packets.STeslaCoilEffect;
-import com.brachy84.mechtech.network.packets.CTeslaCoilModeSwitch;
-import gregtech.api.capability.GregtechCapabilities;
-import gregtech.api.capability.IElectricItem;
-import gregtech.api.damagesources.DamageSources;
-import gregtech.api.items.armor.ArmorUtils;
-import gregtech.api.items.metaitem.MetaItem;
-import gregtech.api.util.Mods;
-import gregtech.api.util.input.KeyBind;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -35,9 +21,24 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.brachy84.mechtech.MechTech;
+import com.brachy84.mechtech.api.armor.IModule;
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.common.MTConfig;
+import com.brachy84.mechtech.common.items.MTMetaItems;
+import com.brachy84.mechtech.network.NetworkHandler;
+import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
+import com.brachy84.mechtech.network.packets.CTeslaCoilModeSwitch;
+import com.brachy84.mechtech.network.packets.STeslaCoilEffect;
+
+import baubles.api.BaublesApi;
+import baubles.api.cap.IBaublesItemHandler;
+import gregtech.api.capability.GregtechCapabilities;
+import gregtech.api.capability.IElectricItem;
+import gregtech.api.damagesources.DamageSources;
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.util.Mods;
+import gregtech.api.util.input.KeyBind;
 
 public class TeslaCoil implements IModule {
 
@@ -50,13 +51,19 @@ public class TeslaCoil implements IModule {
 
     @Override
     public void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
-
         EntityEquipmentSlot slot = ModularArmor.get(modularArmorPiece).getEquipmentSlot(modularArmorPiece);
-        if (toggleTimer == 0 && MechTech.keys.TESLA_COIL_MODE_SWITCH.isKeyDown(player) && MechTech.keys.TESLA_COIL_MODE_SWITCH.isPressed(player)) {
+        if (toggleTimer == 0 && MechTech.keys.TESLA_COIL_MODE_SWITCH.isKeyDown(player) &&
+                MechTech.keys.TESLA_COIL_MODE_SWITCH.isPressed(player)) {
             toggleTimer = 5;
-            NetworkHandler.sendToServer(new CTeslaCoilModeSwitch(slot == EntityEquipmentSlot.HEAD)); // Workaround since it seems like we cannot send NBT changes Client -> Server
+            NetworkHandler.sendToServer(new CTeslaCoilModeSwitch(slot == EntityEquipmentSlot.HEAD)); // Workaround since
+                                                                                                     // it seems like we
+                                                                                                     // cannot send NBT
+                                                                                                     // changes Client
+                                                                                                     // -> Server
         }
-        if (toggleTimer == 0 && KeyBind.ARMOR_CHARGING.isKeyDown(player)) { // Not quite sure why but down here we only need to check isKeyDown and isPressed is false
+        if (toggleTimer == 0 && KeyBind.ARMOR_CHARGING.isKeyDown(player)) { // Not quite sure why but down here we only
+                                                                            // need to check isKeyDown and isPressed is
+                                                                            // false
             toggleTimer = 5;
             NetworkHandler.sendToServer(new CModularArmorSwitchModuleMode(slot, "charge_mode"));
         }
@@ -104,7 +111,8 @@ public class TeslaCoil implements IModule {
 
             // Attack Mobs
             if (mode != 0) {
-                IElectricItem electricItem = modularArmorPiece.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+                IElectricItem electricItem = modularArmorPiece
+                        .getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
                 double range = MTConfig.modularArmor.modules.teslaCoilRange;
                 double damage = MTConfig.modularArmor.modules.teslaCoilDamage;
                 double maxEntities = MTConfig.modularArmor.modules.teslaCoilMaxEntitiesPerSecond;
@@ -113,7 +121,9 @@ public class TeslaCoil implements IModule {
                 if (electricItem.getMaxCharge() < edRatio)
                     return;
                 AxisAlignedBB box = new AxisAlignedBB(player.getPosition()).grow(range);
-                List<Entity> livings = world.getEntitiesInAABBexcluding(player, box, entity -> entity instanceof EntityLivingBase && entity.isEntityAlive() && !(entity instanceof EntityPlayer));
+                List<Entity> livings = world.getEntitiesInAABBexcluding(player, box,
+                        entity -> entity instanceof EntityLivingBase && entity.isEntityAlive() &&
+                                !(entity instanceof EntityPlayer));
                 Collections.shuffle(livings);
                 int count = 0;
                 for (Entity entity : livings) {
@@ -148,7 +158,8 @@ public class TeslaCoil implements IModule {
                 long transferLimit = Math.min(electricItem.getTransferLimit(), armorElectricItem.getTransferLimit());
                 long chargeToTake = electricItem.charge(transferLimit, Integer.MAX_VALUE, true, true);
                 if (chargeToTake > 0 && armorElectricItem.getCharge() > 0) {
-                    long chargeTaken = armorElectricItem.discharge(chargeToTake, Integer.MAX_VALUE, false, false, false);
+                    long chargeTaken = armorElectricItem.discharge(chargeToTake, Integer.MAX_VALUE, false, false,
+                            false);
                     electricItem.charge(chargeTaken, Integer.MAX_VALUE, true, false);
                 }
             }
@@ -156,9 +167,11 @@ public class TeslaCoil implements IModule {
             IEnergyStorage energyStorage = stack.getCapability(CapabilityEnergy.ENERGY, null);
             if (energyStorage.canReceive() && energyStorage.getEnergyStored() != energyStorage.getMaxEnergyStored()) {
                 if (armorElectricItem.getCharge() > 0) {
-                    long chargeToTake = Math.min(armorElectricItem.getTransferLimit(), energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored());
+                    long chargeToTake = Math.min(armorElectricItem.getTransferLimit(),
+                            energyStorage.getMaxEnergyStored() - energyStorage.getEnergyStored());
                     if (chargeToTake > 0) {
-                        int chargeTaken = (int) armorElectricItem.discharge(armorElectricItem.getTransferLimit(), Integer.MAX_VALUE, false, false, false);
+                        int chargeTaken = (int) armorElectricItem.discharge(armorElectricItem.getTransferLimit(),
+                                Integer.MAX_VALUE, false, false, false);
                         energyStorage.receiveEnergy(chargeTaken, false);
                     }
                 }
@@ -179,8 +192,10 @@ public class TeslaCoil implements IModule {
     private void playEffects(EntityPlayer source, Entity target) {
         double targetY = target.posY + target.height / 2.0;
         double sourceY = source.posY + 2.2;
-        STeslaCoilEffect packet = new STeslaCoilEffect(new Vec3d(source.posX, sourceY, source.posZ), new Vec3d(target.posX, targetY, target.posZ));
-        NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(source.dimension, source.posX, source.posY, source.posZ, 20);
+        STeslaCoilEffect packet = new STeslaCoilEffect(new Vec3d(source.posX, sourceY, source.posZ),
+                new Vec3d(target.posX, targetY, target.posZ));
+        NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(source.dimension, source.posX,
+                source.posY, source.posZ, 20);
         NetworkHandler.sendToAllAround(packet, targetPoint);
     }
 
@@ -190,10 +205,14 @@ public class TeslaCoil implements IModule {
             if (armorData.hasKey("tesla_mode")) {
                 byte teslaMode = armorData.getByte("tesla_mode");
                 switch (teslaMode) {
-                    case 0 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("metaarmor.hud.status.disabled")));
-                    case 1 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("mechtech.tesla_coil.attack_mode_switch.monsters")));
-                    case 2 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("mechtech.tesla_coil.attack_mode_switch.animals")));
-                    case 3 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch", I18n.format("mechtech.tesla_coil.attack_mode_switch.animals_and_monsters")));
+                    case 0 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch",
+                            I18n.format("metaarmor.hud.status.disabled")));
+                    case 1 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch",
+                            I18n.format("mechtech.tesla_coil.attack_mode_switch.monsters")));
+                    case 2 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch",
+                            I18n.format("mechtech.tesla_coil.attack_mode_switch.animals")));
+                    case 3 -> hudStrings.add(I18n.format("mechtech.tesla_coil.attack_mode_switch",
+                            I18n.format("mechtech.tesla_coil.attack_mode_switch.animals_and_monsters")));
                 }
             }
 

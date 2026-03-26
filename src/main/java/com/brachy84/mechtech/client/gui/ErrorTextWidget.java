@@ -1,17 +1,17 @@
 package com.brachy84.mechtech.client.gui;
 
-import gregtech.api.gui.IRenderContext;
-import gregtech.api.gui.Widget;
-import gregtech.api.util.Position;
-import gregtech.api.util.Size;
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 
-import java.util.Collections;
-import java.util.List;
+import gregtech.api.gui.IRenderContext;
+import gregtech.api.gui.Widget;
+import gregtech.api.util.Position;
+import gregtech.api.util.Size;
 
 public class ErrorTextWidget extends Widget {
 
@@ -23,7 +23,6 @@ public class ErrorTextWidget extends Widget {
     protected boolean isShadow;
     protected float scale;
     protected int width;
-
 
     public ErrorTextWidget(int xPosition, int yPosition) {
         super(new Position(xPosition, yPosition), Size.ZERO);
@@ -75,7 +74,6 @@ public class ErrorTextWidget extends Widget {
         if (this.uiAccess != null) {
             this.uiAccess.notifySizeChange();
         }
-
     }
 
     @Override

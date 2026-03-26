@@ -1,8 +1,9 @@
 package com.brachy84.mechtech.network;
 
-import com.brachy84.mechtech.MechTech;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
+
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -11,14 +12,14 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.function.Consumer;
+import com.brachy84.mechtech.MechTech;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class NetworkUtils {
 
-    public static final Consumer<PacketBuffer> EMPTY_PACKET = buffer -> {
-    };
+    public static final Consumer<PacketBuffer> EMPTY_PACKET = buffer -> {};
 
     public static boolean isDedicatedClient() {
         return FMLCommonHandler.instance().getSide().isClient();

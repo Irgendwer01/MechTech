@@ -1,16 +1,17 @@
 package com.brachy84.mechtech.integration.jei;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.client.resources.I18n;
 
 import com.brachy84.mechtech.MechTech;
 import com.brachy84.mechtech.common.machines.MTTileEntities;
+
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
-import net.minecraft.client.resources.I18n;
-
-import javax.annotation.Nullable;
 
 public class TorusBlockRecipeCategory implements IRecipeCategory<TorusBlockRecipeWrapper> {
 
@@ -52,6 +53,5 @@ public class TorusBlockRecipeCategory implements IRecipeCategory<TorusBlockRecip
     public void setRecipe(IRecipeLayout recipeLayout, TorusBlockRecipeWrapper recipeWrapper, IIngredients ingredients) {
         recipeLayout.getItemStacks().init(0, true, 0, 0);
         recipeLayout.getItemStacks().set(ingredients);
-
     }
 }

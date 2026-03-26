@@ -1,6 +1,11 @@
 package com.brachy84.mechtech.api.armor;
 
+import java.rmi.AlreadyBoundException;
+
+import org.apache.logging.log4j.Level;
+
 import com.brachy84.mechtech.api.armor.modules.*;
+
 import gregtech.api.GTValues;
 import gregtech.api.unification.material.Material;
 import gregtech.api.unification.material.Materials;
@@ -9,9 +14,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import org.apache.logging.log4j.Level;
-
-import java.rmi.AlreadyBoundException;
 
 public class Modules {
 
@@ -108,13 +110,15 @@ public class Modules {
                 .armor(6, 0.8);
         materialArmorBuilder(2000, Materials.Neutronium)
                 .armor(15, 10)
-                .specialArmor(((entity, modularArmorPiece, moduleData, source, damage, slot) -> new AbsorbResult(0.5, 100)))
+                .specialArmor(
+                        ((entity, modularArmorPiece, moduleData, source, damage, slot) -> new AbsorbResult(0.5, 100)))
                 .registerModule();
     }
 
     public static void registerModule(int id, IModule module) {
         if (REGISTRY.containsKey(id)) {
-            GTLog.logger.throwing(Level.ERROR, new AlreadyBoundException("Can't register module with id " + id + " as it already exists"));
+            GTLog.logger.throwing(Level.ERROR,
+                    new AlreadyBoundException("Can't register module with id " + id + " as it already exists"));
             return;
         }
         REGISTRY.put(id, module);

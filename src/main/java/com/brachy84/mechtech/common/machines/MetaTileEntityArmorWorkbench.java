@@ -1,14 +1,32 @@
 package com.brachy84.mechtech.common.machines;
 
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.pipeline.ColourMultiplier;
-import codechicken.lib.render.pipeline.IVertexOperation;
-import codechicken.lib.vec.Matrix4;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Nonnull;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.items.IItemHandlerModifiable;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.brachy84.mechtech.api.armor.IModule;
 import com.brachy84.mechtech.api.armor.ModularArmor;
 import com.brachy84.mechtech.client.ClientHandler;
 import com.brachy84.mechtech.client.gui.ErrorTextWidget;
 import com.brachy84.mechtech.client.gui.SlotArmorWorkbench;
+
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.pipeline.ColourMultiplier;
+import codechicken.lib.render.pipeline.IVertexOperation;
+import codechicken.lib.vec.Matrix4;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.IElectricItem;
 import gregtech.api.gui.GuiTextures;
@@ -22,42 +40,28 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.Position;
 import gregtech.api.util.Size;
 import gregtech.client.renderer.texture.Textures;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import org.apache.commons.lang3.ArrayUtils;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
 
     protected static final int[][] slotPositions = {
-            {8, 8},
-            {26, 8},
-            {8, 26},
-            {26, 26},
-            {8, 44},
-            {26, 44},
-            {8, 62},
-            {26, 62},
-            {44, 8},
-            {44, 26},
-            {44, 44},
-            {44, 62},
+            { 8, 8 },
+            { 26, 8 },
+            { 8, 26 },
+            { 26, 26 },
+            { 8, 44 },
+            { 26, 44 },
+            { 8, 62 },
+            { 26, 62 },
+            { 44, 8 },
+            { 44, 26 },
+            { 44, 44 },
+            { 44, 62 },
     };
 
     protected static final int[][] batterySlots = {
-            {115, 60},
-            {133, 60},
-            {151, 60}
+            { 115, 60 },
+            { 133, 60 },
+            { 151, 60 }
     };
 
     private static final String REQUIRED = "mechtech.modular_workbench.error1";
@@ -70,10 +74,8 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
     private CustomItemHandler mainSlot;
     private CustomItemHandler moduleSlotHandler;
     private CustomItemHandler batterySlotHandler;
-    private Runnable mainSlotChanger = () -> {
-    };
-    private Runnable moduleSlotChanger = () -> {
-    };
+    private Runnable mainSlotChanger = () -> {};
+    private Runnable moduleSlotChanger = () -> {};
 
     public MetaTileEntityArmorWorkbench(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId);
@@ -99,12 +101,14 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
             }
         };
         moduleSlotHandler = new CustomItemHandler(slotPositions.length) {
+
             @Override
             protected void onContentsChanged(int slot) {
                 moduleSlotChanger.run();
             }
         };
         batterySlotHandler = new CustomItemHandler(batterySlots.length) {
+
             @Override
             protected void onContentsChanged(int slot) {
                 moduleSlotChanger.run();
@@ -183,10 +187,8 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
             }
         });
         builder.bindCloseListener(() -> {
-            mainSlotChanger = () -> {
-            };
-            moduleSlotChanger = () -> {
-            };
+            mainSlotChanger = () -> {};
+            moduleSlotChanger = () -> {};
         });
         return builder.build(getHolder(), player);
     }
@@ -221,7 +223,8 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
         lastArmor = new ItemStack(data.getCompoundTag("LastArmor"));
     }
 
-    private void onMainSlotChanged(EntityPlayer player, List<SlotArmorWorkbench> slots, ErrorTextWidget errorTextWidget) {
+    private void onMainSlotChanged(EntityPlayer player, List<SlotArmorWorkbench> slots,
+                                   ErrorTextWidget errorTextWidget) {
         ItemStack stack = this.mainSlot.getStackInSlot(0);
         for (SlotArmorWorkbench widget : slots) {
             widget.setActive(false);
@@ -242,7 +245,8 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
         }
     }
 
-    private void unpackModules(EntityPlayer player, ItemStack stack, List<SlotArmorWorkbench> slots, ErrorTextWidget errorTextWidget) {
+    private void unpackModules(EntityPlayer player, ItemStack stack, List<SlotArmorWorkbench> slots,
+                               ErrorTextWidget errorTextWidget) {
         unpackModules(stack, slots, errorTextWidget);
     }
 
@@ -299,10 +303,11 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
         }
         ModularArmor.setBatteries(armor, stacks);
         // remove items from all module and battery slots
-        //clearModuleSlots();
+        // clearModuleSlots();
     }
 
-    private boolean isValidModule(ItemStack moduleStack, ItemStack armorStack, ModularArmor modularArmor, ErrorTextWidget errorTextWidget) {
+    private boolean isValidModule(ItemStack moduleStack, ItemStack armorStack, ModularArmor modularArmor,
+                                  ErrorTextWidget errorTextWidget) {
         IModule module = IModule.getOf(moduleStack);
         if (module == null) {
             errorTextWidget.updateText(NOT_MODULE);
@@ -318,7 +323,8 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
         }
         List<IModule> modules = getModules();
         for (IModule module1 : modules) {
-            if (module1.getIncompatibleModules().contains(module) || module.getIncompatibleModules().contains(module1)) {
+            if (module1.getIncompatibleModules().contains(module) ||
+                    module.getIncompatibleModules().contains(module1)) {
                 errorTextWidget.updateText(INCOMPATIBLE, module1.getLocalizedName());
                 return false;
             }
@@ -353,7 +359,8 @@ public class MetaTileEntityArmorWorkbench extends MetaTileEntity {
     private boolean isValidTankItem(ItemStack stack) {
         ModularArmor armor = ModularArmor.get(this.lastArmor);
         if (armor != null && armor.getMaxFluidSize() > 0) {
-            IFluidHandlerItem fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+            IFluidHandlerItem fluidHandler = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY,
+                    null);
             if (fluidHandler != null) {
                 return getCapacity(fluidHandler) <= armor.getMaxFluidSize();
             }

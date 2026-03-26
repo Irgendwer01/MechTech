@@ -20,5 +20,6 @@ public interface ISpecialArmorModule {
      * @param slot              slot of the armor piece
      * @return properties with a action result
      */
-    AbsorbResult getArmorProperties(EntityLivingBase entity, ItemStack modularArmorPiece, NBTTagCompound moduleData, DamageSource source, double damage, EntityEquipmentSlot slot);
+    AbsorbResult getArmorProperties(EntityLivingBase entity, ItemStack modularArmorPiece, NBTTagCompound moduleData,
+                                    DamageSource source, double damage, EntityEquipmentSlot slot);
 }

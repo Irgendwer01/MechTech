@@ -1,15 +1,7 @@
 package com.brachy84.mechtech.common;
 
-import com.brachy84.mechtech.MechTech;
-import com.brachy84.mechtech.api.armor.IModule;
-import com.brachy84.mechtech.api.armor.ModularArmor;
-import com.brachy84.mechtech.api.armor.Modules;
-import com.brachy84.mechtech.api.armor.modules.OxygenMask;
-import com.brachy84.mechtech.common.items.MTMetaItems;
-import com.brachy84.mechtech.common.recipes.Recipes;
-import gregtech.api.GregTechAPI;
-import gregtech.api.metatileentity.registry.MTEManager;
-import micdoodle8.mods.galacticraft.api.event.oxygen.GCCoreOxygenSuffocationEvent;
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -22,7 +14,17 @@ import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.List;
+import com.brachy84.mechtech.MechTech;
+import com.brachy84.mechtech.api.armor.IModule;
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.api.armor.Modules;
+import com.brachy84.mechtech.api.armor.modules.OxygenMask;
+import com.brachy84.mechtech.common.items.MTMetaItems;
+import com.brachy84.mechtech.common.recipes.Recipes;
+
+import gregtech.api.GregTechAPI;
+import gregtech.api.metatileentity.registry.MTEManager;
+import micdoodle8.mods.galacticraft.api.event.oxygen.GCCoreOxygenSuffocationEvent;
 
 @Mod.EventBusSubscriber(modid = MechTech.MODID)
 public class CommonProxy {

@@ -1,16 +1,8 @@
 package com.brachy84.mechtech.api.armor.modules;
 
-import com.brachy84.mechtech.api.armor.AbsorbResult;
-import com.brachy84.mechtech.api.armor.IArmorModule;
-import com.brachy84.mechtech.api.armor.IDurabilityModule;
-import com.brachy84.mechtech.api.armor.ISpecialArmorModule;
-import gregtech.api.items.metaitem.MetaItem;
-import gregtech.api.items.metaitem.stats.IItemColorProvider;
-import gregtech.api.items.metaitem.stats.IItemDurabilityManager;
-import gregtech.api.items.metaitem.stats.IItemMaxStackSizeProvider;
-import gregtech.api.items.metaitem.stats.IItemNameProvider;
-import gregtech.api.unification.material.Material;
-import gregtech.api.util.GradientUtil;
+import java.awt.*;
+import java.util.List;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -18,11 +10,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.items.IItemHandler;
-import org.apache.commons.lang3.tuple.Pair;
+
 import org.lwjgl.input.Keyboard;
 
-import java.awt.*;
-import java.util.List;
+import com.brachy84.mechtech.api.armor.AbsorbResult;
+import com.brachy84.mechtech.api.armor.IArmorModule;
+import com.brachy84.mechtech.api.armor.IDurabilityModule;
+import com.brachy84.mechtech.api.armor.ISpecialArmorModule;
+
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.items.metaitem.stats.IItemColorProvider;
+import gregtech.api.items.metaitem.stats.IItemMaxStackSizeProvider;
+import gregtech.api.items.metaitem.stats.IItemNameProvider;
+import gregtech.api.unification.material.Material;
 
 public class MaterialArmorModule implements IArmorModule, IDurabilityModule, ISpecialArmorModule {
 
@@ -32,7 +32,8 @@ public class MaterialArmorModule implements IArmorModule, IDurabilityModule, ISp
     private final ISpecialArmorModule specialArmorModule;
     private MetaItem<?>.MetaValueItem metaValueItem;
 
-    public MaterialArmorModule(Material material, double armor, double toughness, int durability, ISpecialArmorModule specialArmorModule) {
+    public MaterialArmorModule(Material material, double armor, double toughness, int durability,
+                               ISpecialArmorModule specialArmorModule) {
         this.material = material;
         this.armor = armor;
         this.toughness = toughness;
@@ -98,8 +99,11 @@ public class MaterialArmorModule implements IArmorModule, IDurabilityModule, ISp
     }
 
     @Override
-    public AbsorbResult getArmorProperties(EntityLivingBase entity, ItemStack modularArmorPiece, NBTTagCompound moduleData, DamageSource source, double damage, EntityEquipmentSlot slot) {
-        return specialArmorModule == null ? AbsorbResult.ZERO : specialArmorModule.getArmorProperties(entity, modularArmorPiece, moduleData, source, damage, slot);
+    public AbsorbResult getArmorProperties(EntityLivingBase entity, ItemStack modularArmorPiece,
+                                           NBTTagCompound moduleData, DamageSource source, double damage,
+                                           EntityEquipmentSlot slot) {
+        return specialArmorModule == null ? AbsorbResult.ZERO :
+                specialArmorModule.getArmorProperties(entity, modularArmorPiece, moduleData, source, damage, slot);
     }
 
     @Override
@@ -125,7 +129,8 @@ public class MaterialArmorModule implements IArmorModule, IDurabilityModule, ISp
         this.metaValueItem
                 .addComponents(((IItemColorProvider) (stack, layer) -> material.getMaterialRGB()))
                 // name provider
-                .addComponents(((IItemNameProvider) (stack, name) -> I18n.format("mechtech.modules.armor_plating.name", material.getLocalizedName())))
+                .addComponents(((IItemNameProvider) (stack, name) -> I18n.format("mechtech.modules.armor_plating.name",
+                        material.getLocalizedName())))
                 // stack size provider
                 .addComponents((IItemMaxStackSizeProvider) (itemStack, i) -> 64)
                 // durability handler

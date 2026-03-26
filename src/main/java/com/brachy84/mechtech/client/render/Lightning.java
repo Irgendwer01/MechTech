@@ -1,6 +1,5 @@
 package com.brachy84.mechtech.client.render;
 
-import gregtech.api.util.random.XoShiRo256PlusPlusRandom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -10,6 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import gregtech.api.util.random.XoShiRo256PlusPlusRandom;
 
 public class Lightning extends Particle {
 
@@ -134,7 +135,8 @@ public class Lightning extends Particle {
     }
 
     @Override
-    public void renderParticle(BufferBuilder tess, Entity entityIn, float l, final float rX, final float rY, final float rZ, final float rYZ, final float rXY) {
+    public void renderParticle(BufferBuilder tess, Entity entityIn, float l, final float rX, final float rY,
+                               final float rZ, final float rYZ, final float rXY) {
         float red;
         float green;
         float blue;
@@ -245,7 +247,8 @@ public class Lightning extends Particle {
         this.hasData = false;
     }
 
-    private void draw(float red, float green, float blue, float alpha, final BufferBuilder tess, final double[] a, final double[] b, final double f6, final double f8) {
+    private void draw(float red, float green, float blue, float alpha, final BufferBuilder tess, final double[] a,
+                      final double[] b, final double f6, final double f8) {
         if (this.hasData) {
             tess.pos(a[0], a[1], a[2])
                     .tex(f6, f8)

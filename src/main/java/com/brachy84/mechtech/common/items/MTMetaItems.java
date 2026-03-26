@@ -1,11 +1,11 @@
 package com.brachy84.mechtech.common.items;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import gregtech.api.items.armor.ArmorMetaItem;
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.unification.material.Material;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class MTMetaItems {
 

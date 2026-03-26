@@ -1,11 +1,12 @@
 package com.brachy84.mechtech.api.capability.impl;
 
-import gregtech.common.items.MetaItems;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
-import java.util.ArrayList;
-import java.util.List;
+import gregtech.common.items.MetaItems;
 
 public class EnergyRelayItemHandler extends ItemStackHandler {
 
@@ -20,13 +21,13 @@ public class EnergyRelayItemHandler extends ItemStackHandler {
     }
 
     public void errorSlot(int slot) {
-        if(!erroredSlots.contains(slot)) {
+        if (!erroredSlots.contains(slot)) {
             erroredSlots.add(slot);
         }
     }
 
     public void resolvedError(int slot) {
-        if(hasError(slot)) {
+        if (hasError(slot)) {
             erroredSlots.remove(slot);
         }
     }

@@ -1,13 +1,15 @@
 package com.brachy84.mechtech.client;
 
-import com.brachy84.mechtech.MechTech;
-import gregtech.api.GTValues;
-import gregtech.api.util.GTLog;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+import com.brachy84.mechtech.MechTech;
+
+import gregtech.api.util.GTLog;
+
 public class Sounds {
+
     public static SoundEvent TESLA_ZAP;
 
     public static void registerSounds() {

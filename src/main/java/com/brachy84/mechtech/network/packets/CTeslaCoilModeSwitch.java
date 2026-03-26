@@ -1,7 +1,5 @@
 package com.brachy84.mechtech.network.packets;
 
-import com.brachy84.mechtech.api.armor.ModularArmor;
-import com.brachy84.mechtech.network.IPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -9,12 +7,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
 
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.network.IPacket;
+
 public class CTeslaCoilModeSwitch implements IPacket {
 
     private boolean isHelmet;
 
-    public CTeslaCoilModeSwitch() {
-    }
+    public CTeslaCoilModeSwitch() {}
 
     public CTeslaCoilModeSwitch(final boolean isHelmet) {
         this.isHelmet = isHelmet;
@@ -46,10 +46,11 @@ public class CTeslaCoilModeSwitch implements IPacket {
             mode = nbt.getByte("tesla_mode");
         }
 
-        /* 0 - Off
-           1 - Only Monsters
-           2 - Only Animals
-           3 - Animals & Monsters
+        /*
+         * 0 - Off
+         * 1 - Only Monsters
+         * 2 - Only Animals
+         * 3 - Animals & Monsters
          */
         mode = switch (mode) {
             case 0 -> 1;

@@ -1,13 +1,14 @@
 package com.brachy84.mechtech.common.items;
 
+import static com.brachy84.mechtech.common.items.MTMetaItems.*;
+
 import com.brachy84.mechtech.api.armor.MaterialArmorModuleBuilder;
 import com.brachy84.mechtech.api.armor.Modules;
 import com.brachy84.mechtech.api.armor.modules.MaterialArmorModule;
+
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.items.metaitem.StandardMetaItem;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-
-import static com.brachy84.mechtech.common.items.MTMetaItems.*;
 
 public class MTMetaItem extends StandardMetaItem {
 
@@ -31,12 +32,13 @@ public class MTMetaItem extends StandardMetaItem {
             MaterialArmorModuleBuilder builder = entry.getValue();
             if (!builder.isRegistered())
                 continue;
-            MetaItem<?>.MetaValueItem metaValueItem = addItem(entry.getIntKey(), "armor_plating_" + builder.material.toString())
-                    .addComponents();
+            MetaItem<?>.MetaValueItem metaValueItem = addItem(entry.getIntKey(),
+                    "armor_plating_" + builder.material.toString())
+                            .addComponents();
             ((MaterialArmorModule) Modules.getModule(entry.getIntKey())).init(metaValueItem);
             MATERIAL_ARMOR_PLATINGS.put(builder.material, metaValueItem);
         }
-        //MetaItems.TOOL_DATA_STICK.addComponents(new DataStickBehavior());
+        // MetaItems.TOOL_DATA_STICK.addComponents(new DataStickBehavior());
     }
 
     @Override

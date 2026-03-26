@@ -1,7 +1,5 @@
 package com.brachy84.mechtech.network.packets;
 
-import com.brachy84.mechtech.api.armor.ModularArmor;
-import com.brachy84.mechtech.network.IPacket;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -9,14 +7,17 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketBuffer;
 
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.network.IPacket;
+
 public class CModularArmorSwitchModuleMode implements IPacket {
 
     private EntityEquipmentSlot slot;
     private String modeName;
 
-    public CModularArmorSwitchModuleMode()  {}
+    public CModularArmorSwitchModuleMode() {}
 
-    public CModularArmorSwitchModuleMode(final EntityEquipmentSlot slot, final String modeName)  {
+    public CModularArmorSwitchModuleMode(final EntityEquipmentSlot slot, final String modeName) {
         this.slot = slot;
         this.modeName = modeName;
     }

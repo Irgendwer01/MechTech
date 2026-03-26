@@ -1,15 +1,7 @@
-
 package com.brachy84.mechtech.api.armor.modules;
 
-import com.brachy84.mechtech.api.armor.AbsorbResult;
-import com.brachy84.mechtech.api.armor.IModule;
-import com.brachy84.mechtech.api.armor.ISpecialArmorModule;
-import com.brachy84.mechtech.api.armor.ModularArmor;
-import com.brachy84.mechtech.common.items.MTMetaItems;
-import com.brachy84.mechtech.network.NetworkHandler;
-import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
-import gregtech.api.items.metaitem.MetaItem;
-import gregtech.api.util.input.KeyBind;
+import java.util.List;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,7 +12,16 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.List;
+import com.brachy84.mechtech.api.armor.AbsorbResult;
+import com.brachy84.mechtech.api.armor.IModule;
+import com.brachy84.mechtech.api.armor.ISpecialArmorModule;
+import com.brachy84.mechtech.api.armor.ModularArmor;
+import com.brachy84.mechtech.common.items.MTMetaItems;
+import com.brachy84.mechtech.network.NetworkHandler;
+import com.brachy84.mechtech.network.packets.CModularArmorSwitchModuleMode;
+
+import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.util.input.KeyBind;
 
 public class ShockAbsorber implements IModule, ISpecialArmorModule {
 
@@ -35,7 +36,8 @@ public class ShockAbsorber implements IModule, ISpecialArmorModule {
     public void onClientTick(World world, EntityPlayer player, ItemStack modularArmorPiece, NBTTagCompound armorData) {
         if (toggleTimer == 0 && KeyBind.ARMOR_CANCEL_INERTIA.isKeyDown(player)) {
             toggleTimer = 5;
-            NetworkHandler.sendToServer(new CModularArmorSwitchModuleMode(ModularArmor.get(modularArmorPiece).getSlot(), "cancel_inertia"));
+            NetworkHandler.sendToServer(
+                    new CModularArmorSwitchModuleMode(ModularArmor.get(modularArmorPiece).getSlot(), "cancel_inertia"));
         }
 
         if (toggleTimer > 0) {
@@ -49,7 +51,7 @@ public class ShockAbsorber implements IModule, ISpecialArmorModule {
             NBTTagCompound nbt = ModularArmor.getArmorData(modularArmorPiece);
             nbt.setBoolean("cancel_inertia", false);
             ModularArmor.setArmorData(modularArmorPiece, nbt);
-            ((EntityPlayer)player).inventoryContainer.detectAndSendChanges();
+            ((EntityPlayer) player).inventoryContainer.detectAndSendChanges();
         }
     }
 
@@ -59,7 +61,9 @@ public class ShockAbsorber implements IModule, ISpecialArmorModule {
     }
 
     @Override
-    public AbsorbResult getArmorProperties(EntityLivingBase entity, ItemStack modularArmorPiece, NBTTagCompound moduleData, DamageSource source, double damage, EntityEquipmentSlot slot) {
+    public AbsorbResult getArmorProperties(EntityLivingBase entity, ItemStack modularArmorPiece,
+                                           NBTTagCompound moduleData, DamageSource source, double damage,
+                                           EntityEquipmentSlot slot) {
         if (slot == EntityEquipmentSlot.FEET && source == DamageSource.FALL) {
             return new AbsorbResult(0.9, 40, 10);
         }

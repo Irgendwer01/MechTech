@@ -1,23 +1,23 @@
 package com.brachy84.mechtech.network.packets;
 
-import com.brachy84.mechtech.client.Sounds;
-import com.brachy84.mechtech.client.render.Lightning;
-import com.brachy84.mechtech.network.IPacket;
+import java.awt.*;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.Vec3d;
 
-import java.awt.*;
+import com.brachy84.mechtech.client.Sounds;
+import com.brachy84.mechtech.client.render.Lightning;
+import com.brachy84.mechtech.network.IPacket;
 
 public class STeslaCoilEffect implements IPacket {
 
     private Vec3d source;
     private Vec3d target;
 
-    public STeslaCoilEffect() {
-    }
+    public STeslaCoilEffect() {}
 
     public STeslaCoilEffect(final Vec3d source, final Vec3d target) {
         this.source = source;
@@ -54,7 +54,8 @@ public class STeslaCoilEffect implements IPacket {
                 .setColor(new Color(83, 166, 189, 153).getRGB(), new Color(167, 192, 199, 204).getRGB())
                 .setup();
         Minecraft.getMinecraft().effectRenderer.addEffect(lightning);
-        Minecraft.getMinecraft().world.playSound(source.x, source.y, source.z, Sounds.TESLA_ZAP, SoundCategory.BLOCKS, 1, 1.3f, false);
+        Minecraft.getMinecraft().world.playSound(source.x, source.y, source.z, Sounds.TESLA_ZAP, SoundCategory.BLOCKS,
+                1, 1.3f, false);
         return null;
     }
 }

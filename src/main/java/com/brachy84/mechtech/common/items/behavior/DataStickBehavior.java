@@ -1,11 +1,8 @@
 package com.brachy84.mechtech.common.items.behavior;
 
-//import gregicadditions.machines.overrides.GATieredMetaTileEntity;
-import gregtech.api.items.metaitem.stats.IItemBehaviour;
-import gregtech.api.metatileentity.MetaTileEntity;
-import gregtech.api.metatileentity.MetaTileEntityHolder;
-import gregtech.api.metatileentity.TieredMetaTileEntity;
-import gregtech.api.util.GTLog;
+// import gregicadditions.machines.overrides.GATieredMetaTileEntity;
+import java.util.List;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -17,7 +14,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.List;
+import gregtech.api.items.metaitem.stats.IItemBehaviour;
+import gregtech.api.metatileentity.MetaTileEntity;
+import gregtech.api.metatileentity.MetaTileEntityHolder;
+import gregtech.api.metatileentity.TieredMetaTileEntity;
+import gregtech.api.util.GTLog;
 
 public class DataStickBehavior implements IItemBehaviour {
 
@@ -30,14 +31,17 @@ public class DataStickBehavior implements IItemBehaviour {
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX,
+                                           float hitY, float hitZ, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
         TileEntity tile = world.getTileEntity(pos);
-        if(tile instanceof MetaTileEntityHolder) {
+        if (tile instanceof MetaTileEntityHolder) {
             MetaTileEntity mte = ((MetaTileEntityHolder) tile).getMetaTileEntity();
-            if(mte instanceof TieredMetaTileEntity /*||
-                    mte instanceof GATieredMetaTileEntity*/) {
-                if(!stack.isEmpty()) {
+            if (mte instanceof TieredMetaTileEntity /*
+                                                     * ||
+                                                     * mte instanceof GATieredMetaTileEntity
+                                                     */) {
+                if (!stack.isEmpty()) {
                     GTLog.logger.info("Saving Pos");
                     NBTTagCompound subTag = getOrCreateSubTag(stack);
                     subTag.setInteger("x", pos.getX());
@@ -54,10 +58,11 @@ public class DataStickBehavior implements IItemBehaviour {
 
     @Override
     public void addInformation(ItemStack itemStack, List<String> lines) {
-        if(!itemStack.isEmpty()) {
+        if (!itemStack.isEmpty()) {
             NBTTagCompound tag = getSubTag(itemStack);
-            if(tag != null) {
-                lines.add(I18n.format("metaitem.data_stick.tooltip.blockpos", tag.getInteger("x"), tag.getInteger("y"), tag.getInteger("z"), tag.getShort("dim")));
+            if (tag != null) {
+                lines.add(I18n.format("metaitem.data_stick.tooltip.blockpos", tag.getInteger("x"), tag.getInteger("y"),
+                        tag.getInteger("z"), tag.getShort("dim")));
             }
         }
     }

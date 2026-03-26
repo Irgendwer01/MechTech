@@ -1,10 +1,11 @@
 package com.brachy84.mechtech.client.gui;
 
-import gregtech.api.gui.widgets.SlotWidget;
+import java.util.function.Predicate;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
-import java.util.function.Predicate;
+import gregtech.api.gui.widgets.SlotWidget;
 
 public class SlotArmorWorkbench extends SlotWidget {
 
@@ -35,6 +36,8 @@ public class SlotArmorWorkbench extends SlotWidget {
     }
 
     public enum Type {
-        MODULE, BATTERY, ARMOR
+        MODULE,
+        BATTERY,
+        ARMOR
     }
 }

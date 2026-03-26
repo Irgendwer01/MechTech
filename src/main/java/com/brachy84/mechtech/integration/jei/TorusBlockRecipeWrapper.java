@@ -1,13 +1,15 @@
 package com.brachy84.mechtech.integration.jei;
 
-//import gregicadditions.GAValues;
+// import gregicadditions.GAValues;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 
 import com.brachy84.mechtech.api.ToroidBlock;
+
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 
 public class TorusBlockRecipeWrapper implements IRecipeWrapper {
 
@@ -31,5 +33,4 @@ public class TorusBlockRecipeWrapper implements IRecipeWrapper {
     public void drawLine(Minecraft minecraft, String langKey, int x, int y, int color, Object... obj) {
         minecraft.fontRenderer.drawString(I18n.format(langKey, obj), x, y, color);
     }
-
 }

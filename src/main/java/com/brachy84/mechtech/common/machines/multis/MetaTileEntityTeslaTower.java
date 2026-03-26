@@ -1,8 +1,28 @@
 package com.brachy84.mechtech.common.machines.multis;
 
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.pipeline.IVertexOperation;
-import codechicken.lib.vec.Matrix4;
+import static gregtech.api.util.RelativeDirection.*;
+
+import java.util.*;
+
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.brachy84.mechtech.MechTech;
 import com.brachy84.mechtech.api.ToroidBlock;
 import com.brachy84.mechtech.api.armor.IModule;
@@ -15,6 +35,10 @@ import com.brachy84.mechtech.network.NetworkHandler;
 import com.brachy84.mechtech.network.packets.STeslaTowerEffect;
 import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
 import com.cleanroommc.modularui.widgets.ToggleButton;
+
+import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.pipeline.IVertexOperation;
+import codechicken.lib.vec.Matrix4;
 import gregtech.api.GTValues;
 import gregtech.api.capability.GregtechCapabilities;
 import gregtech.api.capability.GregtechTileCapabilities;
@@ -43,27 +67,6 @@ import gregtech.common.blocks.BlockCompressed;
 import gregtech.common.blocks.BlockMetalCasing;
 import gregtech.common.blocks.BlockWireCoil;
 import gregtech.common.blocks.MetaBlocks;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
-
-import static gregtech.api.util.RelativeDirection.*;
 
 public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
 
@@ -88,7 +91,6 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
     private int scanX, scanY, scanZ;
     private Vec3d minPos, maxPos;
     private BlockPos center;
-
 
     private boolean defenseMode;
 
@@ -141,7 +143,8 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
                         if (te == null) {
                             continue;
                         }
-                        CoverableView coverable = te.getCapability(GregtechTileCapabilities.CAPABILITY_COVER_HOLDER, null);
+                        CoverableView coverable = te.getCapability(GregtechTileCapabilities.CAPABILITY_COVER_HOLDER,
+                                null);
                         if (coverable == null) {
                             continue;
                         }
@@ -166,7 +169,9 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
         // gather living entities every 2 seconds
         if (getOffsetTimer() % 40 == 0) {
             livings.clear();
-            for (Entity entity : getWorld().getEntitiesInAABBexcluding(null, new AxisAlignedBB(minPos, maxPos), entity -> entity.isEntityAlive() && entity instanceof EntityLivingBase && !(entity instanceof EntityPlayer))) {
+            for (Entity entity : getWorld().getEntitiesInAABBexcluding(null, new AxisAlignedBB(minPos, maxPos),
+                    entity -> entity.isEntityAlive() && entity instanceof EntityLivingBase &&
+                            !(entity instanceof EntityPlayer))) {
                 livings.add((EntityLivingBase) entity);
             }
         }
@@ -180,7 +185,8 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
             Iterator<EntityLivingBase> iterator1 = livings.iterator();
             while (entitiesHit < maxEntities && iterator1.hasNext()) {
                 EntityLivingBase living = iterator1.next();
-                if (living == null || !living.isEntityAlive() || isEntityOutOfRange(living) || living instanceof EntityPlayer) {
+                if (living == null || !living.isEntityAlive() || isEntityOutOfRange(living) ||
+                        living instanceof EntityPlayer) {
                     iterator1.remove();
                     continue;
                 }
@@ -202,7 +208,8 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
         // gather players every 2 seconds
         if (getOffsetTimer() % 40 == 0) {
             livings.clear();
-            for (Entity entity : getWorld().getEntitiesInAABBexcluding(null, new AxisAlignedBB(minPos, maxPos), entity -> entity.isEntityAlive() && entity instanceof EntityPlayer)) {
+            for (Entity entity : getWorld().getEntitiesInAABBexcluding(null, new AxisAlignedBB(minPos, maxPos),
+                    entity -> entity.isEntityAlive() && entity instanceof EntityPlayer)) {
                 livings.add((EntityLivingBase) entity);
             }
         }
@@ -221,8 +228,12 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
                         if (stack.hasCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null)) {
                             for (IModule module : ModularArmor.getModulesOf(stack)) {
                                 if (module instanceof ReceiverModule) {
-                                    IElectricItem electricItem = stack.getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
-                                    long chargeToTake = Math.min(electricItem.charge(ModularArmor.getTransferLimit(stack), Integer.MAX_VALUE, true, true), energyContainerList.getEnergyStored());
+                                    IElectricItem electricItem = stack
+                                            .getCapability(GregtechCapabilities.CAPABILITY_ELECTRIC_ITEM, null);
+                                    long chargeToTake = Math.min(
+                                            electricItem.charge(ModularArmor.getTransferLimit(stack), Integer.MAX_VALUE,
+                                                    true, true),
+                                            energyContainerList.getEnergyStored());
                                     if (chargeToTake > 0 && energyContainerList.getEnergyStored() >= chargeToTake) {
                                         energyContainerList.removeEnergy(chargeToTake);
                                         electricItem.charge(chargeToTake, Integer.MAX_VALUE, true, false);
@@ -350,7 +361,8 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
                         "####LLL####",
                         "###########",
                         "###########",
-                        "###########").setRepeatable(3, 32)
+                        "###########")
+                .setRepeatable(3, 32)
                 .aisle("###########",
                         "###########",
                         "###########",
@@ -424,14 +436,17 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
                     return false;
                 } else {
                     blockWorldState.getMatchContext().increment("Count", 1);
-                    blockWorldState.getMatchContext().getOrPut("VABlock", new LinkedList<>()).add(blockWorldState.getPos());
+                    blockWorldState.getMatchContext().getOrPut("VABlock", new LinkedList<>())
+                            .add(blockWorldState.getPos());
                     coilHeat = coilType.getCoilTemperature();
                     return true;
                 }
             } else {
                 return false;
             }
-        }, () -> Arrays.stream(BlockWireCoil.getCoilTypes().toArray(new BlockWireCoil.CoilType[0])).map((type) -> new BlockInfo(MetaBlocks.WIRE_COIL.getState(type), null)).toArray(BlockInfo[]::new)).addTooltips("gregtech.multiblock.pattern.error.coils");
+        }, () -> Arrays.stream(BlockWireCoil.getCoilTypes().toArray(new BlockWireCoil.CoilType[0]))
+                .map((type) -> new BlockInfo(MetaBlocks.WIRE_COIL.getState(type), null)).toArray(BlockInfo[]::new))
+                        .addTooltips("gregtech.multiblock.pattern.error.coils");
     }
 
     protected IBlockState getCasingState() {
@@ -448,7 +463,7 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
 
     @Override
     protected MultiblockUIFactory createUIFactory() {
-        return super.createUIFactory().createFlexButton((posGuiData, panelSyncManager) ->  {
+        return super.createUIFactory().createFlexButton((posGuiData, panelSyncManager) -> {
             BooleanSyncValue booleanSyncValue = new BooleanSyncValue(this::getDefenseMode, this::setDefenseMode);
             return new ToggleButton().addTooltipElement(KeyUtil.lang("mechtech.tesla_tower.ui.mode.tooltip"))
                     .value(booleanSyncValue)
@@ -465,8 +480,12 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
                     keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.voltage", uiSyncer.syncLong(voltage)));
                     keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.damage", uiSyncer.syncFloat(dmg)));
                     keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.range", uiSyncer.syncDouble(range)));
-                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.receivers", uiSyncer.syncInt(energyHandlers.size())));
-                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.current_mode", uiSyncer.syncBoolean(this.defenseMode) ? I18n.format("mechtech.multiblock.tesla_tower.mode.defense") : I18n.format("mechtech.multiblock.tesla_tower.mode.wireless_energy")));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.receivers",
+                            uiSyncer.syncInt(energyHandlers.size())));
+                    keyManager.add(KeyUtil.lang("mechtech.multiblock.tesla_tower.current_mode",
+                            uiSyncer.syncBoolean(this.defenseMode) ?
+                                    I18n.format("mechtech.multiblock.tesla_tower.mode.defense") :
+                                    I18n.format("mechtech.multiblock.tesla_tower.mode.wireless_energy")));
                 });
     }
 
@@ -483,7 +502,8 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
     @Override
     public void renderMetaTileEntity(CCRenderState renderState, Matrix4 translation, IVertexOperation[] pipeline) {
         super.renderMetaTileEntity(renderState, translation, pipeline);
-        Textures.MULTIBLOCK_WORKABLE_OVERLAY.renderOrientedState(renderState, translation, pipeline, getFrontFacing(), isStructureFormed() && energyHandlers.size() > 0, true);
+        Textures.MULTIBLOCK_WORKABLE_OVERLAY.renderOrientedState(renderState, translation, pipeline, getFrontFacing(),
+                isStructureFormed() && energyHandlers.size() > 0, true);
     }
 
     private boolean hasCover(EnumFacing facing, TileEntity te) {
@@ -504,12 +524,14 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
             return;
         }
         IEnergyContainer energyContainer = te.getCapability(GregtechCapabilities.CAPABILITY_ENERGY_CONTAINER, facing);
-        if (energyContainer == null || !energyContainer.inputsEnergy(facing) || energyContainer instanceof EnergyContainerBatteryBuffer) {
+        if (energyContainer == null || !energyContainer.inputsEnergy(facing) ||
+                energyContainer instanceof EnergyContainerBatteryBuffer) {
             toRemove.add(pos);
             return;
         }
 
-        long volt = (energyContainer.getInputVoltage() * energyContainer.getInputAmperage()) * 20; // Voltage gets multiplied by 20
+        long volt = (energyContainer.getInputVoltage() * energyContainer.getInputAmperage()) * 20; // Voltage gets
+                                                                                                   // multiplied by 20
         // The energy that will be lost (voltage * factor)
         long lost = (long) (volt * (1 - getLossFactor(center.getDistance(pos.getX(), pos.getY(), pos.getZ()) / range)));
         volt = Math.min(energyContainer.getEnergyCapacity() - energyContainer.getEnergyStored(), volt);
@@ -540,9 +562,9 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
             return;
         }
 
-
-        if (MTConfig.teslaTower.lightningChance > 0 && (MTConfig.teslaTower.lightningChance == 1 || GTValues.RNG.nextDouble() < MTConfig.teslaTower.lightningChance)) {
-            //playEffects(pos);
+        if (MTConfig.teslaTower.lightningChance > 0 && (MTConfig.teslaTower.lightningChance == 1 ||
+                GTValues.RNG.nextDouble() < MTConfig.teslaTower.lightningChance)) {
+            // playEffects(pos);
             effectQueue.add(pos);
         }
     }
@@ -556,13 +578,15 @@ public class MetaTileEntityTeslaTower extends MultiblockWithDisplayBase {
 
     private void playEffects(BlockPos target) {
         STeslaTowerEffect packet = new STeslaTowerEffect(center, MechTech.getMiddleOf(target));
-        NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(), center.getX(), center.getY(), center.getZ(), 64);
+        NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(),
+                center.getX(), center.getY(), center.getZ(), 64);
         NetworkHandler.sendToAllAround(packet, targetPoint);
     }
 
     private void playEffects(Entity target) {
         STeslaTowerEffect packet = new STeslaTowerEffect(center, MechTech.getMiddleOf(target)).setScale(5f);
-        NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(), center.getX(), center.getY(), center.getZ(), 64);
+        NetworkRegistry.TargetPoint targetPoint = new NetworkRegistry.TargetPoint(getWorld().provider.getDimension(),
+                center.getX(), center.getY(), center.getZ(), 64);
         NetworkHandler.sendToAllAround(packet, targetPoint);
     }
 

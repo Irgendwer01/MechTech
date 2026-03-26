@@ -1,8 +1,7 @@
 package com.brachy84.mechtech.network.packets;
 
-import com.brachy84.mechtech.client.Sounds;
-import com.brachy84.mechtech.client.render.Lightning;
-import com.brachy84.mechtech.network.IPacket;
+import java.awt.*;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.PacketBuffer;
@@ -10,7 +9,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
-import java.awt.*;
+import com.brachy84.mechtech.client.Sounds;
+import com.brachy84.mechtech.client.render.Lightning;
+import com.brachy84.mechtech.network.IPacket;
 
 public class STeslaTowerEffect implements IPacket {
 
@@ -18,8 +19,7 @@ public class STeslaTowerEffect implements IPacket {
     private Vec3d target;
     private float scale = 12f;
 
-    public STeslaTowerEffect() {
-    }
+    public STeslaTowerEffect() {}
 
     public STeslaTowerEffect(final BlockPos source, final Vec3d target) {
         this.source = source;

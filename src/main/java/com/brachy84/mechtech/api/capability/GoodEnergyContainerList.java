@@ -1,10 +1,11 @@
 package com.brachy84.mechtech.api.capability;
 
-import gregtech.api.capability.IEnergyContainer;
-import net.minecraft.util.EnumFacing;
-
 import java.util.List;
 import java.util.OptionalLong;
+
+import net.minecraft.util.EnumFacing;
+
+import gregtech.api.capability.IEnergyContainer;
 
 public class GoodEnergyContainerList implements IEnergyContainer {
 
@@ -15,8 +16,8 @@ public class GoodEnergyContainerList implements IEnergyContainer {
     }
 
     public boolean inputsEnergy(EnumFacing enumFacing) {
-        for(IEnergyContainer energyContainer : energyContainers)
-            if(energyContainer.inputsEnergy(enumFacing))
+        for (IEnergyContainer energyContainer : energyContainers)
+            if (energyContainer.inputsEnergy(enumFacing))
                 return true;
         return false;
     }
@@ -78,7 +79,7 @@ public class GoodEnergyContainerList implements IEnergyContainer {
         OptionalLong amps = energyContainers.stream()
                 .mapToLong(IEnergyContainer::getInputAmperage)
                 .min();
-        if(amps.isPresent())
+        if (amps.isPresent())
             return amps.getAsLong();
         return 0;
     }
@@ -88,7 +89,7 @@ public class GoodEnergyContainerList implements IEnergyContainer {
         OptionalLong amps = energyContainers.stream()
                 .mapToLong(IEnergyContainer::getInputVoltage)
                 .min();
-        if(amps.isPresent())
+        if (amps.isPresent())
             return amps.getAsLong();
         return 0;
     }

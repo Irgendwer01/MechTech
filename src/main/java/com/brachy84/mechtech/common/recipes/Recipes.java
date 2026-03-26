@@ -1,10 +1,16 @@
 package com.brachy84.mechtech.common.recipes;
 
+import static gregtech.api.unification.material.Materials.*;
+import static gregtech.api.unification.ore.OrePrefix.*;
+
+import net.minecraft.item.ItemStack;
+
 import com.brachy84.mechtech.api.armor.MaterialArmorModuleBuilder;
 import com.brachy84.mechtech.api.armor.Modules;
 import com.brachy84.mechtech.common.MTConfig;
 import com.brachy84.mechtech.common.items.MTMetaItems;
 import com.brachy84.mechtech.common.machines.MTTileEntities;
+
 import gregtech.api.GTValues;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.RecipeMaps;
@@ -19,10 +25,6 @@ import gregtech.common.blocks.BlockMetalCasing;
 import gregtech.common.blocks.MetaBlocks;
 import gregtech.common.items.MetaItems;
 import gregtech.common.metatileentities.MetaTileEntities;
-import net.minecraft.item.ItemStack;
-
-import static gregtech.api.unification.material.Materials.*;
-import static gregtech.api.unification.ore.OrePrefix.*;
 
 public class Recipes {
 
@@ -32,7 +34,8 @@ public class Recipes {
         metaTileEntities();
         for (MaterialArmorModuleBuilder builder : Modules.getArmorModules().values()) {
             if (builder.isRegistered()) {
-                if (builder.doGenerateRecipe && builder.material != null && builder.material.hasFlag(MaterialFlags.GENERATE_PLATE)) {
+                if (builder.doGenerateRecipe && builder.material != null &&
+                        builder.material.hasFlag(MaterialFlags.GENERATE_PLATE)) {
                     generateArmorPlatingRecipe(builder);
                 }
             }
@@ -88,7 +91,8 @@ public class Recipes {
         }
         Material material = builder.material;
         if (material.hasProperty(PropertyKey.INGOT)) {
-            ModHandler.addShapedRecipe("armor_plating_" + material, result, "PPh", "PP ", "h  ", 'P', new UnificationEntry(OrePrefix.plate, material));
+            ModHandler.addShapedRecipe("armor_plating_" + material, result, "PPh", "PP ", "h  ", 'P',
+                    new UnificationEntry(OrePrefix.plate, material));
             RecipeMaps.FORMING_PRESS_RECIPES.recipeBuilder()
                     .input(plate, material, 2)
                     .input(plate, material, 2)
@@ -99,7 +103,8 @@ public class Recipes {
         } else if (material.hasProperty(PropertyKey.GEM)) {
 
             // TODO gem plating recipe
-            ModHandler.addShapedRecipe("armor_plating_" + material, result, "PPh", "PP ", "h  ", 'P', new UnificationEntry(OrePrefix.plate, material));
+            ModHandler.addShapedRecipe("armor_plating_" + material, result, "PPh", "PP ", "h  ", 'P',
+                    new UnificationEntry(OrePrefix.plate, material));
             RecipeMaps.FORMING_PRESS_RECIPES.recipeBuilder()
                     .input(plate, material, 2)
                     .input(plate, material, 2)
@@ -182,7 +187,9 @@ public class Recipes {
     }
 
     private static void metaTileEntities() {
-        ModHandler.addShapedRecipe("armor_workbench", MTTileEntities.ARMOR_WORKBENCH.getStackForm(), " S ", "SWS", "hSw", 'S', new UnificationEntry(OrePrefix.stick, Materials.StainlessSteel), 'W', MetaTileEntities.WORKBENCH.getStackForm());
+        ModHandler.addShapedRecipe("armor_workbench", MTTileEntities.ARMOR_WORKBENCH.getStackForm(), " S ", "SWS",
+                "hSw", 'S', new UnificationEntry(OrePrefix.stick, Materials.StainlessSteel), 'W',
+                MetaTileEntities.WORKBENCH.getStackForm());
 
         if (MTConfig.teslaTower.enable)
             RecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder()
